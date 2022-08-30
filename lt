@@ -1,0 +1,1008 @@
+#!/bin/bash
+#
+# Copyright (c) 2018, 2028, HengSheng IT HangZhou.  All rights reserved.
+# Author: chongzi
+
+usage()
+{
+  echo "
+  Usage: pg <command> [<arguments>]
+  e.g. : pg active 5432
+
+    General
+      -u user/pass                             use USER/PASS to log in
+      [] is the default ;  <> is a must
+
+    Commands list:
+
+      - awr/pwr <port> [bid] [eid]           PostgreSQL pwr top parameter <pg_profile.topn;> sql;default is last 2 snapshots interval
+      - snap/take_sample <port>              select take_sample(); to create a snapshot for PostgreSQL
+      - lock|wait_chain                      show blocked rows and blocked chains for PostgreSQL
+      - active                               show PostgreSQL database active sessions,include pg_show_plans https://www.hs.net/lightdb/docs/html/pg-show-plans.html
+      - tab                                  show PostgreSQL TABLE Information
+      - ltcenter                             ltcenter show active session message
+      - age                                  PostgreSQL free age Information
+      - kill                                 select pg_terminate_backend(pid);
+      - lt_dump                              parallel lt_dump
+      - lt_restore                           importing --section=pre-data --section=post-data --section=data
+      - index_monitor <port> <database>      PostgreSQL monitoring database index usage
+      - bg                                   show PostgreSQL Background Writer and Checkpointer Information
+      - tbs                                  view all PostgreSQL tablespace detail info
+  NOTE
+  =======================
+    - Set environment variable DBUSER to change default connect string which  is \"/ as sysdba\"
+    - Set environment variable ORA_TMP to the default temp directory (default if /tmp when not set)
+"
+}
+
+###################################
+#very important init parameter
+filedate=`date +"%Y%m%d_%H%M%S"`
+ECHO=""
+DEFNODISP="--"
+DEFDISP=""
+INST="1"
+###################################
+if [ "$1" = "dg" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg dg <port>"
+    exit 1
+  fi
+
+  ltsql -p $2 -x -c"
+   SELECT application_name                            AS appname,
+        usename,
+        coalesce(client_addr::TEXT, 'localhost')    AS address,
+        pid::TEXT,
+        client_port,
+        CASE state WHEN 'streaming' THEN 0 WHEN 'startup' THEN 1 WHEN 'catchup' THEN 2 WHEN 'backup' THEN 3 WHEN 'stopping' THEN 4 ELSE -1 END AS state,
+        CASE sync_state WHEN 'async' THEN 0 WHEN 'potential' THEN 1 WHEN 'sync' THEN 2 WHEN 'quorum' THEN 3 ELSE -1 END AS sync_state,
+        sync_priority,
+        backend_xmin::TEXT::BIGINT                  AS backend_xmin,
+        current.lsn - '0/0'                         AS lsn,
+        current.lsn - sent_lsn                      AS sent_diff,
+        current.lsn - write_lsn                     AS write_diff,
+        current.lsn - flush_lsn                     AS flush_diff,
+        current.lsn - replay_lsn                    AS replay_diff,
+        sent_lsn - '0/0'                            AS sent_lsn,
+        write_lsn - '0/0'                           AS write_lsn,
+        flush_lsn - '0/0'                           AS flush_lsn,
+        replay_lsn - '0/0'                          AS replay_lsn,
+        coalesce(extract(EPOCH FROM write_lag), 0)  AS write_lag,
+        coalesce(extract(EPOCH FROM flush_lag), 0)  AS flush_lag,
+        coalesce(extract(EPOCH FROM replay_lag), 0) AS replay_lag,
+        extract(EPOCH FROM current_timestamp)       AS current_time,
+        extract(EPOCH FROM backend_start)           AS launch_time,
+        extract(EPOCH FROM reply_time)              AS reply_time
+ FROM pg_stat_replication,
+      (SELECT CASE WHEN pg_is_in_recovery() THEN pg_last_wal_replay_lsn() ELSE pg_current_wal_lsn() END AS lsn) current;
+      select * from pg_settings where name ='synchronous_commit';
+  "
+fi
+######################################
+if [ "$1" = "lt_dump" ]; then
+    while true
+     do
+       read -p "please input username[exit or EXIT]:" USER
+       read -p "please input username password[exit or EXIT]:" PWD
+       read -p "please input database ip [exit or EXIT]:" HOST
+       read -p "please input database port [exit or EXIT]:" PORT
+       read -p "please input database name [exit or EXIT]:" DBNAME
+       read -p "please input schema that need dump [exit or EXIT]:" SCHEMA
+       read -p "please input lt_dump parallel [exit or EXIT]:" $j
+
+       if [ -z "${USER}" ];then
+       echo "The username or password is empty, program exit"
+       exit 0
+       fi
+       if [ -z "${PWD}" ];then
+       echo "The username or password is empty, program exit"
+       exit 0
+       fi
+       if [ -z "${HOST}" ];then
+       echo "The database ip address is empty, program exit"
+       exit 0
+       fi
+       if [ -z "${PORT}" ];then
+       echo "The database port is empty, program exit"
+       exit 0
+       fi
+       if [ -z "${DBNAME}" ];then
+       echo "The export database name is empty, program exit"
+       exit 0
+       fi
+       if [ -z "${SCHEMA}" ];then
+       echo "The export database name is empty, program exit"
+       exit 0
+       fi
+       if [ "$schema" = "exit" -o "$schema" = "EXIT" -o "$schema" = "exit" -o "$schema" = "EXIT" ]; then
+         echo "input exit, program exit"
+	       exit 0            ###执行退出命令
+       fi
+       PGPASSWORD=$PWD lt_dump -U $USER -h$HOST -p$PORT -d$DBNAME -n$SCHEMA -Fd -j $j --no-publications --no-subscriptions --no-unlogged-table-data -f $schema > lt_dump_${DBNAME}_{$schema}${filedate}.log 2>&1 &
+         echo 'background exporting...'
+     done
+ fi
+##############################
+if [ "$1" = "lt_restore" ]; then
+
+   if [ "$2" = "" ]; then
+     echo "Usage: pg lt_restore <port>"
+     exit 0
+   fi
+    while true
+     do
+       read -p "please input superuser [exit or EXIT]:" username
+       read -p "please input superuser password[exit or EXIT]:" PWD
+       read -p "please input database name[exit or EXIT]:" db_name
+       read -p "please input import schema name[exit or EXIT]:" schema_name
+       read -p "please input target ip address[exit or EXIT]:" ip
+       read -p "please input target lightdb port[exit or EXIT]:" port
+       read -p "please input data folder[exit or EXIT]:" data_folder
+       read -p "import option? [metadata_only/data_only/all/ | exit or EXIT]:" import_option
+
+       if [ -z "${username}" ];then
+         echo "The superuser name is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${PWD}" ];then
+         echo "The superuser password is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${db_name}" ];then
+         echo "The target database name empty, program exit"
+         exit 0
+       fi
+       if [ -z "${schema_name}" ];then
+         echo "The target schema name empty, program exit"
+         exit 0
+       fi
+       if [ -z "${ip}" ];then
+         echo "The target database ip information is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${port}" ];then
+         echo "The target database port information is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${data_folder}" ];then
+         echo "The data folder information is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${import_option}" ];then
+         echo "The import option parameter is empty, program exit"
+         exit 0
+       fi
+       if [ "$import_option" = "exit" -o "$import_option" = "EXIT" -o "$username" = "exit" -o "$username" = "EXIT" -o "$password" = "exit" -o "$password" = "EXIT" -o "$db_name" = "exit" -o "$db_name" = "EXIT" -o "$ip" = "exit" -o "$ip" = "EXIT" -o "$port" = "exit" -o "$port" = "EXIT" -o "$data_folder" = "exit" -o "$data_folder" = "EXIT" ]; then
+         echo "input exit, program exit"
+	       exit 0  ###执行退出命令
+       fi
+
+       if [ "$import_option" = "metadata_only" ]; then
+         echo 'Importing metadata_only begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                                 > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$PWD lt_restore $data_folder -U $username -h $ip -p $port -d $db_name -n $schema_name  --section=pre-data --section=post-data >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+       elif [ "$import_option" = "data_only" ]; then
+         echo 'Importing data_only begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                                      > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$PWD lt_restore $data_folder -U $username -h $ip -p $port -j 30 -d $db_name -n $schema_name --section=data >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+
+       elif [ "$import_option" = "all" ]; then
+         echo 'Importing all data begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                                      > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$PWD lt_restore $data_folder -U $username -h $ip -p $port -d $db_name -n $schema_name --section=pre-data --section=post-data >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$PWD lt_restore $data_folder -U $username -h $ip -p $port -d $db_name -n $schema_name -j 30 --section=data                   >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+
+       fi
+     done
+   echo 'importing complete'
+   fi
+######################################
+if [ "$1" = "ora2pg" ]; then
+
+   if [ "$2" = "" ]; then
+     echo "Usage: pg ora2pg <exp/imp>"
+     exit 0
+   fi
+
+   if [ "$2" = "exp" ]; then
+     echo ""
+     echo "First edit ora2pg config file ora2pg.conf to make sure datasource is correct"
+     echo "vim lt set data_type_list parameter to set export object type"
+     echo ""
+     while true
+     do
+
+       read -p "please input schema name[exit or EXIT]:" schema
+       read -p "please input schema password[exit or EXIT]:" password
+       if [ -z "${schema}" ];then
+       echo "The username or password is empty, program exit"
+       exit 0
+       fi
+       if [ -z "${password}" ];then
+       echo "The username or password is empty, program exit"
+       exit 0
+       fi
+       if [ "$schema" = "exit" -o "$schema" = "EXIT" -o "$schema" = "exit" -o "$schema" = "EXIT" ]; then
+         echo "input exit, program exit"
+	       exit 0            ###执行退出命令
+       fi
+       connect=`ora2pg -t SHOW_VERSION -c ora2pg.conf -u $schema -w $password`
+       echo $connect
+       ora28000_flag="ORA-28000"
+       ora01017_flag="ORA-01017"
+       oracle_logon_flag="Oracle"
+       if [[ "$connect" =~ ^"${ora01017_flag}".* ]]; then
+         echo $connect
+         echo "ORA-01017: invalid username/password; logon denied"
+       elif [[ "$connect" =~ ^"${ora28000_flag}".* ]]; then
+         echo $connect
+         echo "ORA-28000: The account is locked"
+       elif [[ "$connect" =~ ^"${oracle_logon_flag}".* ]]; then
+	       mkdir -p $schema
+	       # default export object,如果Oracle数据库中有分区表和普通表,则需要同时指定TABLE和PARTITION
+         data_type_list='TABLE
+         PARTITION
+         COPY
+         SEQUENCE
+         SYNONYM'
+         #PROCEDURE
+         #FUNCTION
+         #PACKAGE
+         #GRANT
+         #VIEW
+         for data_type in $data_type_list
+         do
+           echo 'exporting' ${data_type}' please wait...'
+           # 添加 -P 20 指定并行
+           ora2pg -c ora2pg.conf -t SHOW_REPORT --estimate_cost -u $schema -p 20 -w $password -n $schema -t$data_type -b $schema -o ${data_type}_${schema}_${filedate}.sql > ${data_type}_${schema}_${filedate}.log 2>&1 &
+         done
+         echo 'background exporting...'
+       fi
+     done
+   elif [ "$2" = "imp" ]; then
+     echo ""
+     echo "Make sure target Lightdb has been created database (schema created or not no needed) for the importing database"
+     echo ""
+     while true
+     do
+       read -p "please input superuser [exit or EXIT]:" username
+       read -p "please input superuser password[exit or EXIT]:" password
+       read -p "please input database name[exit or EXIT]:" db_name
+       read -p "please input target ip address[exit or EXIT]:" ip
+       read -p "please input target lightdb port[exit or EXIT]:" port
+       read -p "please input data folder[exit or EXIT]:" data_folder
+       read -p "import option? [table_only/view_only/data_only/index_only/foreign_key_only/all/ | exit or EXIT]:" import_option
+
+       if [ -z "${username}" ];then
+         echo "The superuser name is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${password}" ];then
+         echo "The superuser password is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${db_name}" ];then
+         echo "The target database name empty, program exit"
+         exit 0
+       fi
+       if [ -z "${ip}" ];then
+         echo "The target database ip information is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${port}" ];then
+         echo "The target database port information is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${data_folder}" ];then
+         echo "The data folder information is empty, program exit"
+         exit 0
+       fi
+       if [ -z "${import_option}" ];then
+         echo "The import option parameter is empty, program exit"
+         exit 0
+       fi
+       if [ "$import_option" = "exit" -o "$import_option" = "EXIT" -o "$username" = "exit" -o "$username" = "EXIT" -o "$password" = "exit" -o "$password" = "EXIT" -o "$db_name" = "exit" -o "$db_name" = "EXIT" -o "$ip" = "exit" -o "$ip" = "EXIT" -o "$port" = "exit" -o "$port" = "EXIT" -o "$data_folder" = "exit" -o "$data_folder" = "EXIT" ]; then
+         echo "input exit, program exit"
+	       exit 0  ###执行退出命令
+       fi
+
+       #-v ON_ERROR_STOP=ON
+# 如果要单独导入数据，需要先删除掉外键
+# alter table act_ge_bytearray drop constraint if EXISTS act_fk_bytearr_depl;
+# 然后再根据FKEYS_中的内容去创建
+# ALTER TABLE act_ge_bytearray ADD CONSTRAINT act_fk_bytearr_depl FOREIGN KEY (deployment_id_) REFERENCES act_re_deployment(id_) ON DELETE NO ACTION NOT DEFERRABLE INITIALLY IMMEDIATE;
+       if [ "$import_option" = "data_only" ]; then
+         echo 'Importing data begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                                 > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^COPY_'`      >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         echo 'analyze verbose begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                               >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -c "analyze verbose"                                       >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+
+       elif [ "$import_option" = "view_only" ]; then
+         echo 'Importing views begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                              > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^VIEW_'`      >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         echo 'analyze verbose begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                               >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -c "analyze verbose"                                       >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+
+       elif [ "$import_option" = "index_only" ]; then
+         echo 'Importing indexes begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                              > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^INDEXES_'`   >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         echo 'analyze verbose begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                               >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -c "analyze verbose"                                       >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+
+       elif [ "$import_option" = "foreign_key_only" ]; then
+         echo 'Importing foreign key begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                          > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^FKEYS_'`     >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         echo 'analyze verbose begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                               >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -c "analyze verbose"                                       >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+       elif [ "$import_option" = "table_only" ]; then
+         echo 'Importing only tables begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                          > imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^TABLE_'`     >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^PARTITION_'` >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         echo 'analyze verbose begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                               >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -c "analyze verbose"                                       >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &
+       elif [ "$import_option" = "all" ]; then
+         echo 'Importing all folder please wait...'
+         ## 如果要不导入表注释掉下两行...
+         echo 'Importing tables begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                           > imp_${db_name}_${data_folder}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^TABLE_'` >> imp_${db_name}_${data_folder}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^PARTITION_'` >> imp_${db_name}_${data_folder}_${import_option}.log 2>&1 &&
+         for sql_file in `ls ${data_folder} | grep -v '^TABLE_' | grep -v '^FKEYS_' | grep -v '^PARTITION_'`
+          do
+           echo 'Importing '${sql_file}' begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                        >> imp_${db_name}_${data_folder}.log 2>&1
+           PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/${sql_file}               >> imp_${db_name}_${data_folder}.log 2>&1
+          done &&
+         echo 'analyze verbose begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                           >> imp_${db_name}_${data_folder}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -c "analyze verbose"                                   >> imp_${db_name}_${data_folder}.log 2>&1 &&
+         echo 'Importing foreign key begin at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                     >> imp_${db_name}_${data_folder}.log 2>&1 &&
+         PGPASSWORD=$password ltsql -U $username -h $ip -p $port -d $db_name -f ${data_folder}/`ls ${data_folder} | grep '^FKEYS_'` >> imp_${db_name}_${data_folder}.log 2>&1 &&
+         echo 'Importing complete at '`date +"%Y-%m-%d %H:%M:%S"`'...'                                                              >> imp_${db_name}_${data_folder}.log 2>&1 &
+       fi
+     done
+   echo 'importing complete'
+   fi
+fi
+######################################
+if [ "$1" = "pg_bulkload" ]; then
+
+   if [ "$2" = "" ]; then
+     read -p "please input superuser [exit or EXIT]:" username
+     read -p "please input superuser password[exit or EXIT]:" password
+     read -p "please input database name[exit or EXIT]:" db_name
+     read -p "please input target ip address[exit or EXIT]:" ip
+     read -p "please input target lightdb port[exit or EXIT]:" port
+     read -p "please input data folder[exit or EXIT]:" data_folder
+    mkdir -p $schema
+
+    if [ -z "${schema}" ];then
+        echo "input schema error"
+    fi
+    if [ -z "${password}" ];then
+        echo "input password error"
+    fi
+  fi
+# default export object
+data_type_list='TABLE
+ COPY
+ SEQUENCE
+ VIEW
+ PROCEDURE
+ '
+ #GRANT
+ #FUNCTION
+ #PACKAGE
+ for data_type in $data_type_list
+ do
+   ora2pg -c ora2pg.conf -u $schema -w $password -n $schema -t$data_type -b $schema -o ${data_type}_${schema}_${filedate}.sql > ${data_type}_${schema}_${filedate}.log 2>&1
+   echo 'exporting' ${data_type}' please wait...'
+ done
+exit 0
+echo 'exporting secuss'
+fi
+############################################
+
+if [ "$1" = "lt_dump" ]; then
+
+   if [ "$2" = "" ]; then
+     read -p "please input superuser [exit or EXIT]:" username
+     read -p "please input superuser password[exit or EXIT]:" password
+     read -p "please input database name[exit or EXIT]:" db_name
+     read -p "please input target ip address[exit or EXIT]:" ip
+     read -p "please input target lightdb port[exit or EXIT]:" port
+     read -p "please input data folder[exit or EXIT]:" data_folder
+    mkdir -p $schema
+
+    if [ -z "${schema}" ];then
+        echo "input schema error"
+    fi
+    if [ -z "${password}" ];then
+        echo "input password error"
+    fi
+  fi
+# default export object
+
+   time PGPASSWORD=$password lt_dump -Fd -U $username -h $ip -p $port -d $db_name -j 16 -f $db_name -v > $db_name.log 2>&1 &
+   echo 'exporting' ${data_type}' please wait...'
+
+exit 0
+echo 'exporting secuss'
+fi
+######################################
+if [ "$1" = "ddl" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "lt get_ddl <port> <object_name>/<relfilenode>"
+    exit 1
+  fi
+  object_name=$2
+ ltsql -p $2 -Ulightdb -c "
+ SELECT c.oid,
+       (select rolname from pg_authid auth where auth.oid = c.relowner)            as username,
+       (select tbs.spcname from pg_tablespace tbs where tbs.oid = c.reltablespace) as tablesapce_name,
+       (select n.nspname from pg_catalog.pg_namespace n where n.oid = c.relnamespace) || '.' ||
+       c.relname                                                                   as object_name,
+       c.relfilenode                                                               as relfilenode,
+       pg_catalog.pg_relation_filepath(c.oid)                                      as object_location,
+       pg_catalog.pg_relation_filepath(c.reltoastrelid)                            as toast_object_location,
+       pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid))                  as object_size,
+       CASE c.relkind
+           WHEN 'r' THEN 'table'
+           WHEN 'v' THEN 'view'
+           WHEN 'm' THEN 'materialized view'
+           WHEN 'i' THEN 'index'
+           WHEN 'S' THEN 'sequence'
+           WHEN 's' THEN 'special'
+           WHEN 'f' THEN 'foreign table'
+           WHEN 'p' THEN 'partitioned table'
+           WHEN 'I' THEN 'partitioned index' END                                   as object_type,
+       (select am.amname from pg_am am where am.oid = c.relam)                     as object_access_method,
+       CASE c.relpersistence
+           WHEN 'p' THEN 'permanent'
+           WHEN 't' THEN 'temporary'
+           WHEN 'u' THEN 'unlogged' END                                            as temp_or_nologging,
+       (select type.typname from pg_type type where type.oid = c.reltype)          as typname
+FROM pg_catalog.pg_class c
+WHERE (c.relname = '$3' or c.oid = '$3' or c.relfilenode = '$3') -- and pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1, 2;
+ "
+ exit 0
+fi
+######################################################
+if [ "$1" = "lock" -o "$1" = "wait_chain" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg lock <port>"
+    exit 1
+  fi
+
+ ltsql -p $2 -Ulightdb -c """
+WITH RECURSIVE
+  lock_composite(requested, current) AS (VALUES
+    ('AccessShareLock'::text, 'AccessExclusiveLock'::text),
+    ('RowShareLock'::text, 'ExclusiveLock'::text),
+    ('RowShareLock'::text, 'AccessExclusiveLock'::text),
+    ('RowExclusiveLock'::text, 'ShareLock'::text),
+    ('RowExclusiveLock'::text, 'ShareRowExclusiveLock'::text),
+    ('RowExclusiveLock'::text, 'ExclusiveLock'::text),
+    ('RowExclusiveLock'::text, 'AccessExclusiveLock'::text),
+    ('ShareUpdateExclusiveLock'::text, 'ShareUpdateExclusiveLock'::text),
+    ('ShareUpdateExclusiveLock'::text, 'ShareLock'::text),
+    ('ShareUpdateExclusiveLock'::text, 'ShareRowExclusiveLock'::text),
+    ('ShareUpdateExclusiveLock'::text, 'ExclusiveLock'::text),
+    ('ShareUpdateExclusiveLock'::text, 'AccessExclusiveLock'::text),
+    ('ShareLock'::text, 'RowExclusiveLock'::text),
+    ('ShareLock'::text, 'ShareUpdateExclusiveLock'::text),
+    ('ShareLock'::text, 'ShareRowExclusiveLock'::text),
+    ('ShareLock'::text, 'ExclusiveLock'::text),
+    ('ShareLock'::text, 'AccessExclusiveLock'::text),
+    ('ShareRowExclusiveLock'::text, 'RowExclusiveLock'::text),
+    ('ShareRowExclusiveLock'::text, 'ShareUpdateExclusiveLock'::text),
+    ('ShareRowExclusiveLock'::text, 'ShareLock'::text),
+    ('ShareRowExclusiveLock'::text, 'ShareRowExclusiveLock'::text),
+    ('ShareRowExclusiveLock'::text, 'ExclusiveLock'::text),
+    ('ShareRowExclusiveLock'::text, 'AccessExclusiveLock'::text),
+    ('ExclusiveLock'::text, 'RowShareLock'::text),
+    ('ExclusiveLock'::text, 'RowExclusiveLock'::text),
+    ('ExclusiveLock'::text, 'ShareUpdateExclusiveLock'::text),
+    ('ExclusiveLock'::text, 'ShareLock'::text),
+    ('ExclusiveLock'::text, 'ShareRowExclusiveLock'::text),
+    ('ExclusiveLock'::text, 'ExclusiveLock'::text),
+    ('ExclusiveLock'::text, 'AccessExclusiveLock'::text),
+    ('AccessExclusiveLock'::text, 'AccessShareLock'::text),
+    ('AccessExclusiveLock'::text, 'RowShareLock'::text),
+    ('AccessExclusiveLock'::text, 'RowExclusiveLock'::text),
+    ('AccessExclusiveLock'::text, 'ShareUpdateExclusiveLock'::text),
+    ('AccessExclusiveLock'::text, 'ShareLock'::text),
+    ('AccessExclusiveLock'::text, 'ShareRowExclusiveLock'::text),
+    ('AccessExclusiveLock'::text, 'ExclusiveLock'::text),
+    ('AccessExclusiveLock'::text, 'AccessExclusiveLock'::text)
+  )
+, lock AS (
+  SELECT pid,
+     virtualtransaction,
+     granted,
+     mode,
+    (locktype,
+     CASE locktype
+       WHEN 'relation'      THEN concat_ws(';', 'db:'||datname, 'rel:'||relation::regclass::text)
+       WHEN 'extend'        THEN concat_ws(';', 'db:'||datname, 'rel:'||relation::regclass::text)
+       WHEN 'page'          THEN concat_ws(';', 'db:'||datname, 'rel:'||relation::regclass::text, 'page#'||page::text)
+       WHEN 'tuple'         THEN concat_ws(';', 'db:'||datname, 'rel:'||relation::regclass::text, 'page#'||page::text, 'tuple#'||tuple::text)
+       WHEN 'transactionid' THEN transactionid::text
+       WHEN 'virtualxid'    THEN virtualxid::text
+       WHEN 'object'        THEN concat_ws(';', 'class:'||classid::regclass::text, 'objid:'||objid, 'col#'||objsubid)
+       ELSE concat('db:'||datname)
+     END::text) AS target
+  FROM pg_catalog.pg_locks
+  LEFT JOIN pg_catalog.pg_database ON (pg_database.oid = pg_locks.database)
+  )
+, waiting_lock AS (
+  SELECT
+    blocker.pid                         AS blocker_pid,
+    blocked.pid                         AS pid,
+    concat(blocked.mode,blocked.target) AS lock_target
+  FROM lock blocker
+  JOIN lock blocked
+    ON ( NOT blocked.granted
+     AND blocker.granted
+     AND blocked.pid != blocker.pid
+     AND blocked.target IS NOT DISTINCT FROM blocker.target)
+  JOIN lock_composite c ON (c.requested = blocked.mode AND c.current = blocker.mode)
+  )
+, acquired_lock AS (
+  WITH waiting AS (
+    SELECT lock_target, count(lock_target) AS wait_count FROM waiting_lock GROUP BY lock_target
+  )
+  SELECT
+    pid,
+    array_agg(concat(mode,target,' + '||wait_count) ORDER BY wait_count DESC NULLS LAST) AS locks_acquired
+  FROM lock
+    LEFT JOIN waiting ON waiting.lock_target = concat(mode,target)
+  WHERE granted
+  GROUP BY pid
+  )
+, blocking_lock AS (
+  SELECT
+    ARRAY[date_part('epoch', query_start)::int, pid] AS seq,
+     0::int AS "depth",
+    -1::int AS blocker_pid,
+    pid,
+    concat('Connect: ',usename,' ',datname,' ',coalesce(host(client_addr)||':'||client_port, 'local')
+      , E'\nSQL: ',replace(substr(coalesce(query,'N/A'), 1, 60), E'\n', ' ')
+      , E'\nAcquired:\n  '
+      , array_to_string(locks_acquired[1:5] ||
+                        CASE WHEN array_upper(locks_acquired,1) > 5
+                             THEN '... '||(array_upper(locks_acquired,1) - 5)::text||' more ...'
+                        END,
+                        E'\n  ')
+    ) AS lock_info,
+    concat(to_char(query_start, CASE WHEN age(query_start) > '24h' THEN 'Day DD Mon' ELSE 'HH24:MI:SS' END),E' started\n'
+          ,CASE WHEN wait_event IS NOT NULL THEN 'waiting' ELSE state END,E'\n'
+          ,date_trunc('second',age(now(),query_start)),' ago'
+    ) AS lock_state
+  FROM acquired_lock blocker
+  LEFT JOIN pg_stat_activity act USING (pid)
+  WHERE EXISTS
+         (SELECT 'x' FROM waiting_lock blocked WHERE blocked.blocker_pid = blocker.pid)
+    AND NOT EXISTS
+         (SELECT 'x' FROM waiting_lock blocked WHERE blocked.pid = blocker.pid)
+UNION ALL
+  SELECT
+    blocker.seq || blocked.pid,
+    blocker.depth + 1,
+    blocker.pid,
+    blocked.pid,
+    concat('Connect: ',usename,' ',datname,' ',coalesce(host(client_addr)||':'||client_port, 'local')
+      , E'\nSQL: ',replace(substr(coalesce(query,'N/A'), 1, 60), E'\n', ' ')
+      , E'\nWaiting: ',blocked.lock_target
+      , CASE WHEN locks_acquired IS NOT NULL
+             THEN E'\nAcquired:\n  ' ||
+                  array_to_string(locks_acquired[1:5] ||
+                                  CASE WHEN array_upper(locks_acquired,1) > 5
+                                       THEN '... '||(array_upper(locks_acquired,1) - 5)::text||' more ...'
+                                  END,
+                                  E'\n  ')
+        END
+    ) AS lock_info,
+    concat(to_char(query_start, CASE WHEN age(query_start) > '24h' THEN 'Day DD Mon' ELSE 'HH24:MI:SS' END),E' started\n'
+          ,CASE WHEN wait_event IS NOT NULL THEN 'waiting' ELSE state END,E'\n'
+          ,date_trunc('second',age(now(),query_start)),' ago'
+    ) AS lock_state
+  FROM blocking_lock blocker
+  JOIN waiting_lock blocked
+    ON (blocked.blocker_pid = blocker.pid)
+  LEFT JOIN pg_stat_activity act ON (act.pid = blocked.pid)
+  LEFT JOIN acquired_lock acq ON (acq.pid = blocked.pid)
+  WHERE blocker.depth < 5
+  )
+SELECT concat(lpad('=> ', 4*depth, ' '),pid::text) AS "PID", lock_info AS Lock_Info, lock_state AS State
+FROM blocking_lock ORDER BY seq;
+ """
+!
+exit 0
+fi
+######################################################
+if [ "$1" = "tbs" -o "$1" = "size" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg tbs <port>"
+    exit 1
+  fi
+
+ ltsql -p $2 -Ulightdb -c """
+SELECT d.datname as "DB_NAME",
+       pg_size_pretty(pg_database_size(d.datname)) as "DB_SIZE_GB",
+       pg_catalog.pg_get_userbyid(d.datdba) as "OWNER",
+       pg_catalog.pg_encoding_to_char(d.encoding) as "Encoding",
+       d.datcollate as "Collate",
+       d.datctype as "Ctype",
+       pg_catalog.array_to_string(d.datacl, E'\n') AS "Access privileges"
+FROM pg_catalog.pg_database d
+  JOIN pg_catalog.pg_tablespace t on d.dattablespace = t.oid;
+ """
+!
+exit 0
+fi
+
+#####################################
+if [ "$1" = "index_monitor" ]; then
+  if [ "$2" = "" ]; then
+    echo "Usage: pg index_monitor <port> <database>"
+    echo "https://wiki.postgresql.org/wiki/Index_Maintenance"
+    exit 1
+  fi
+ ltsql -p $2 -Ulightdb -d $3 -c """
+SELECT
+    t.schemaname,
+    t.tablename,
+    c.reltuples::bigint                            AS num_rows,
+    pg_size_pretty(pg_relation_size(c.oid))        AS table_size,
+    psai.indexrelname                              AS index_name,
+    pg_size_pretty(pg_relation_size(i.indexrelid)) AS index_size,
+    CASE WHEN i.indisunique THEN 'Y' ELSE 'N' END  AS "unique",
+    psai.idx_scan                                  AS number_of_scans,
+    psai.idx_tup_read                              AS tuples_read,
+    psai.idx_tup_fetch                             AS tuples_fetched
+FROM
+    pg_tables t
+    LEFT JOIN pg_class c ON t.tablename = c.relname
+    LEFT JOIN pg_index i ON c.oid = i.indrelid
+    LEFT JOIN pg_stat_all_indexes psai ON i.indexrelid = psai.indexrelid
+WHERE
+    t.schemaname NOT IN ('pg_catalog', 'information_schema')
+ORDER BY 1, 2;
+ """
+!
+exit 0
+fi
+######################
+if [  "$1" = "snap" -o "$1" = "snapshot" -o "$1" = "take_sample" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg snap <port>"
+    exit 1
+  fi
+  read -p "This Command will execute select take_sample(),cont? y/[n]:" cont
+
+  if [ "${cont}" = "y" -o "${cont}" = "Y" ];then
+
+    ltsql -p $2 -Ulightdb -c "select take_sample();"
+    echo "select take_sample() executed!"
+  fi
+exit 0
+fi
+######################
+if [  "$1" = "awr" -o "$1" = "pwr" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg awr/pwr <port>"
+    exit 1
+  fi
+  if [ "$3" = "" -o "$4" = "" ]; then
+   ltsql -U lightdb -p $2 -c "select * from samples order by sample_time;"
+
+   defbid_init=`ltsql -p $2 -c "select max(sample_id) - 1 from samples;"`
+   defbid=`echo $defbid_init | awk '{print $3}'`
+   let defeid=defbid+1
+   read -p "Please input begin snap_id[$defbid]:" bid
+    if [ -z "${bid}" ];then
+         bid=$defbid
+    fi
+   read -p "Please input end   snap_id[$defeid]:" eid
+    if [ -z "${eid}" ];then
+         eid=$defeid
+    fi
+
+    if [ ${bid} -ge ${eid} ];then
+      echo begin_snap_id:$bid end_snap_id:$eid  input error!
+      exit 1
+    fi
+    else
+    bid=$3
+    eid=$4
+  fi
+
+ltsql -U lightdb -p $2 -Aqtc "SELECT get_pwr($bid,$eid)" -o pwr_report_${bid}_${eid}_${filedate}.html
+exit 0
+fi
+####################################################
+if [ "$1" = "snap" -o "$1" = "take_sample" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg snap/take_sample <port>"
+    exit 1
+  fi
+
+   read -p "This Command will execute select take_sample(); ,cont? y/[n]:" cont
+
+    if [ "${cont}" = "y" -o "${cont}" = "Y" ];then
+      ltsql -U lightdb -p $2 -c "select take_sample();"
+   else
+      echo "command canceled"
+      exit 1
+    fi
+exit 0
+fi
+
+###################################################
+if [ "$1" = "active" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg active <port>"
+    exit 1
+  fi
+echo ""
+echo "select pg_terminate_backend('pid);"
+echo "======================"
+ ltsql -p $2 -U lightdb -c """
+SELECT pid                                                     AS pid,
+       usename || '@' || datname || '@' || coalesce(client_addr::TEXT, 'localhost') || ':' || client_port || '@' ||application_name  AS "client_username_db_addr_port_appname",
+       backend_type,
+       wait_event ||'@'||wait_event_type                       AS wait_event_class,
+       state,
+       pg_catalog.to_char(now() - query_start,'hh24:mi:ss.ms') AS duration,
+       regexp_replace(query, E'\\s+', ' ', 'g') AS query
+FROM pg_stat_activity
+WHERE state != 'idle'
+  and pid != pg_backend_pid()
+  and now() - query_start > '0.0001s'::interval
+  -- AND ((clock_timestamp() - xact_start) > '{{.QueryAgeThresh}}'::interval OR (clock_timestamp() - query_start) > '{{.QueryAgeThresh}}'::interval)
+ORDER BY duration DESC;
+"""
+
+ ltsql -p $2 -U lightdb -c """
+select pid,
+       pg_get_userbyid(userid) as "user",
+       now() - query_start AS duration,
+       --query,
+       plan
+ from pg_show_plans
+ p join pg_stat_activity a using(pid)
+ where p.pid != pg_backend_pid()
+ -- and datname = current_database()
+ and now() - query_start > '0.0001s'::interval order by duration DESC limit 5;
+ """
+exit 0
+fi
+######################################################
+if [ "$1" = "bg" ]; then
+  if [ "$2" = "" ]; then
+    echo "Usage: pg bg <port>"
+    exit 1
+  fi
+ ltsql -p $2 -U lightdb -c -X """
+ """
+exit 0
+fi
+######################################################
+if [ "$1" = "age" ]; then
+  if [ "$2" = "" ]; then
+    echo "Usage: pg age <port> <db_name>"
+    exit 1
+  fi
+
+echo ""
+echo """Show Database Freeze Age Information """
+echo """======================="""
+ ltsql -p $2 -U lightdb -c """
+with pg_get_db as
+(
+SELECT d.oid, d.datname,
+pg_stat_get_db_xact_commit(d.oid) AS xact_commit,
+pg_stat_get_db_xact_rollback(d.oid) AS xact_rollback,
+pg_stat_get_db_blocks_fetched(d.oid) AS blks_fetch,
+pg_stat_get_db_blocks_hit(d.oid) AS blks_hit,
+pg_stat_get_db_tuples_returned(d.oid) AS tup_returned,
+pg_stat_get_db_tuples_fetched(d.oid) AS tup_fetched,
+pg_stat_get_db_tuples_inserted(d.oid) AS tup_inserted,
+pg_stat_get_db_tuples_updated(d.oid) AS tup_updated,
+pg_stat_get_db_tuples_deleted(d.oid) AS tup_deleted,
+pg_stat_get_db_temp_files(d.oid) AS temp_files,
+pg_stat_get_db_temp_bytes(d.oid) AS temp_bytes,
+pg_stat_get_db_deadlocks(d.oid) AS deadlocks,
+pg_stat_get_db_blk_read_time(d.oid) AS blk_read_time,
+pg_stat_get_db_blk_write_time(d.oid) AS blk_write_time,
+cast(round(pg_database_size(d.oid)/1024/1024/1024,2) as varchar )|| ' G' AS db_size,
+age(datfrozenxid),
+pg_stat_get_db_stat_reset_time(d.oid) AS stats_reset
+FROM pg_database d
+)
+SELECT datname DB,
+       xact_commit commits,
+       xact_rollback rollbacks,
+       tup_inserted+tup_updated+tup_deleted transactions,
+       CASE WHEN blks_fetch > 0 THEN blks_hit*100/blks_fetch ELSE NULL END  hit_ratio,
+       temp_files,
+       temp_bytes,
+       lpad(db_size,12) as db_size,
+       txid_current()   as txid_current,
+       age,
+       (2^31 - age) as txid_left,
+       lpad((cast(round(100* ((2^31-age)/2^31),2) as varchar) || ' %'),14) as txid_left_pct
+FROM pg_get_db order by age desc;
+ """
+echo """Show Tables That Freeze Age > 150000000 in The Database"""
+echo """======================="""
+ ltsql -p $2 -U lightdb -d $3 -c """
+WITH tabfreeze AS (
+    SELECT pg_class.oid::regclass                                        AS full_table_name,
+           greatest(age(pg_class.relfrozenxid), age(toast.relfrozenxid)) as freeze_age,
+           pg_size_pretty(pg_relation_size(pg_class.oid)) as pg_relation_size,
+           pg_size_pretty(pg_total_relation_size(pg_class.oid)) as tab_and_ind_size,
+           greatest(pg_stat_get_last_autoanalyze_time(pg_class.oid), pg_stat_get_last_analyze_time(pg_class.oid)) as last_anlyze,
+           greatest(pg_stat_get_last_autovacuum_time(pg_class.oid), pg_stat_get_last_vacuum_time(pg_class.oid)) as last_vacuum
+    FROM pg_class
+             JOIN pg_namespace ON pg_class.relnamespace = pg_namespace.oid
+             LEFT OUTER JOIN pg_class as toast
+                             ON pg_class.reltoastrelid = toast.oid
+    WHERE nspname not in ('pg_catalog', 'information_schema')
+      AND nspname NOT LIKE 'pg_temp%'
+      AND pg_class.relkind = 'r'
+)
+SELECT full_table_name,
+freeze_age,
+pg_relation_size,
+tab_and_ind_size,
+to_char(last_anlyze,'yyyy-mm-dd hh24:mi:ss') as last_anlyze,
+to_char(last_vacuum,'yyyy-mm-dd hh24:mi:ss') as last_vacuum
+FROM tabfreeze
+WHERE freeze_age > 150000000 ORDER BY freeze_age DESC
+LIMIT 1000;
+ """
+echo """Show dead_pct > 10 and table_size > 10M in The Cluster """
+echo """======================="""
+ ltsql -p $2 -U lightdb -c """
+WITH deadrow_tables AS (
+                SELECT relid::regclass as full_table_name,
+                       ((n_dead_tup::numeric) / ( n_live_tup + 1 )) as dead_pct,
+                       pg_relation_size(relid) as table_bytes
+                FROM pg_stat_user_tables
+                WHERE n_dead_tup > 100
+                AND ((now() - last_autovacuum) > INTERVAL '1 hour' OR last_autovacuum IS NULL )
+                AND ((now() - last_vacuum) > INTERVAL '1 hour' OR last_vacuum IS NULL ))
+SELECT full_table_name ,dead_pct,table_bytes FROM deadrow_tables
+WHERE dead_pct > 0.001
+AND table_bytes/1024/1024 > 10
+ORDER BY dead_pct DESC, table_bytes DESC;
+"""
+
+echo """Show Top 50 Tables Freeze Age Information in The Database"""
+echo """======================="""
+ ltsql -p $2 -U lightdb -d $3 -c """
+with pg_get_rel as (select oid                                                                                  AS relid,
+                           relnamespace,
+                           relpages::bigint                                                                        blks,
+                           pg_stat_get_live_tuples(oid)                                                         AS n_live_tup,
+                           pg_stat_get_dead_tuples(oid)                                                         AS n_dead_tup,
+                           lpad(cast(round(pg_relation_size(oid)/1024/1024/1024,2) as varchar) || ' GB',10)        rel_size,
+                           lpad(cast(round(pg_table_size(oid)/1024/1024/1024,2) as varchar) || ' GB',10)           tot_tab_size,
+                           lpad(cast(round(pg_total_relation_size(oid)/1024/1024/1024,2) as varchar) || ' GB',10)  tab_ind_size,
+                           age(relfrozenxid)                                                                       rel_age,
+                           GREATEST(pg_stat_get_last_autovacuum_time(oid), pg_stat_get_last_vacuum_time(oid))   AS last_vac,
+                           GREATEST(pg_stat_get_last_autoanalyze_time(oid), pg_stat_get_last_analyze_time(oid)) AS last_anlyze,
+                           pg_stat_get_vacuum_count(oid) + pg_stat_get_autovacuum_count(oid)                    AS vac_nos
+                    FROM pg_class
+                    WHERE relkind in ('r', 't', 'p', 'm', '')),
+     pg_get_class as (SELECT oid as reloid, relname, relkind, relnamespace
+                      FROM pg_class
+                      WHERE relnamespace NOT IN
+                            (SELECT oid FROM pg_namespace WHERE nspname in ('pg_catalog', 'information_schema'))),
+     pg_get_toast as (SELECT oid as relid, reltoastrelid as toastid FROM pg_class WHERE reltoastrelid != 0),
+     pg_tab_bloat as (SELECT table_oid,
+                             CEIL((cc.reltuples * ((datahdr + ma - (CASE WHEN datahdr % ma = 0 THEN ma ELSE datahdr % ma END)) + nullhdr2 + 4)) / (bs - 20::float)) AS est_pages
+                      FROM (SELECT ma,
+                                   bs,
+                                   table_oid,
+                                   (datawidth + (hdr + ma - (case when hdr % ma = 0 THEN ma ELSE hdr % ma END)))::numeric AS datahdr,
+                                   (maxfracsum * (nullhdr + ma - (case when nullhdr % ma = 0 THEN ma ELSE nullhdr % ma END)))          AS nullhdr2
+                            FROM (SELECT s.starelid                                                 as table_oid,
+                                         23                                                         AS hdr,
+                                         8                                                          AS ma,
+                                         8192                                                       AS bs,
+                                         SUM((1 - stanullfrac) * stawidth)                          AS datawidth,
+                                         MAX(stanullfrac)                                           AS maxfracsum,
+                                         23 + (SELECT 1 + count(*) / 8 FROM pg_statistic s2 WHERE stanullfrac <> 0 AND s.starelid = s2.starelid) AS nullhdr
+                                  FROM pg_statistic s
+                                  GROUP BY 1, 2) AS foo) AS rs
+                               JOIN pg_class cc ON cc.oid = rs.table_oid
+                               JOIN pg_namespace nn ON cc.relnamespace = nn.oid AND nn.nspname <> 'information_schema')
+SELECT (select n.nspname from pg_namespace n where n.oid = r.relnamespace) ||'.' ||c.relname || CASE WHEN c.relkind != 'r' THEN ' (' || c.relkind || ')' ELSE '' END || CASE WHEN r.blks > 999 AND r.blks > tb.est_pages THEN ' (' || (r.blks - tb.est_pages) * 100 / r.blks || '% bloat*)' ELSE '' END "SCHEMA_TAB_NAME",
+       r.n_live_tup                                                                                         "Live_tup",
+       r.n_dead_tup                                                                                         "Dead_tup",
+       CASE WHEN r.n_live_tup <> 0 THEN ROUND((r.n_dead_tup::real / r.n_live_tup::real)::numeric, 4) END    "Dead_DIV_Live",
+       r.rel_size                                                                                           "Rel_size",
+       r.tot_tab_size                                                                                       "Tot_Tab_size",
+       --r.tab_ind_size                                                                                       "TabAndIndSize",
+       r.rel_age,
+       --to_char(r.last_vac, 'YYYY-MM-DD HH24:MI:SS')                                                         "Last_vacuum",
+       --to_char(r.last_anlyze, 'YYYY-MM-DD HH24:MI:SS')                                                      "Last_analyze",
+       r.vac_nos,
+       ct.relname                                                                                           "Toast_name",
+       rt.tab_ind_size                                                                                      "Toast_And_Ind",
+       rt.rel_age                                                                                           "Toast_Age",
+       GREATEST(r.rel_age, rt.rel_age)                                                                      "Max_age"
+FROM pg_get_rel r
+         JOIN pg_get_class c ON r.relid = c.reloid AND c.relkind NOT IN ('t', 'p')
+         LEFT JOIN pg_get_toast t ON r.relid = t.relid
+         LEFT JOIN pg_get_class ct ON t.toastid = ct.reloid
+         LEFT JOIN pg_get_rel rt ON rt.relid = t.toastid
+         LEFT JOIN pg_tab_bloat tb ON r.relid = tb.table_oid
+ORDER BY r.rel_age DESC
+LIMIT 50;
+"""
+exit 0
+fi
+######################################################
+if [ "$1" = "ltcenter" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "Usage: pg ltcenter <port>"
+    exit 1
+  fi
+
+ltcenter top -U lightdb -dpostgres -h127.0.0.1 -p $2
+exit 0
+fi
+########################################################################
+if [ "$1" = "ltddl" ]; then
+
+  if [ "$2" = "" ]; then
+    echo "ora get_ddl <port> <object_name>/<relfilenode>"
+    exit 1
+  fi
+  object_name=$2
+ ltsql -p $2 -Ulightdb -c "
+ SELECT c.oid,
+       (select rolname from pg_authid auth where auth.oid = c.relowner)            as username,
+       (select tbs.spcname from pg_tablespace tbs where tbs.oid = c.reltablespace) as tablesapce_name,
+       (select n.nspname from pg_catalog.pg_namespace n where n.oid = c.relnamespace) || '.' ||
+       c.relname                                                                   as object_name,
+       c.relfilenode                                                               as relfilenode,
+       pg_catalog.pg_relation_filepath(c.oid)                                      as object_location,
+       pg_catalog.pg_relation_filepath(c.reltoastrelid)                            as toast_object_location,
+       pg_catalog.pg_size_pretty(pg_catalog.pg_table_size(c.oid))                  as object_size,
+       CASE c.relkind
+           WHEN 'r' THEN 'table'
+           WHEN 'v' THEN 'view'
+           WHEN 'm' THEN 'materialized view'
+           WHEN 'i' THEN 'index'
+           WHEN 'S' THEN 'sequence'
+           WHEN 's' THEN 'special'
+           WHEN 'f' THEN 'foreign table'
+           WHEN 'p' THEN 'partitioned table'
+           WHEN 'I' THEN 'partitioned index' END                                   as object_type,
+       (select am.amname from pg_am am where am.oid = c.relam)                     as object_access_method,
+       CASE c.relpersistence
+           WHEN 'p' THEN 'permanent'
+           WHEN 't' THEN 'temporary'
+           WHEN 'u' THEN 'unlogged' END                                            as temp_or_nologging,
+       (select type.typname from pg_type type where type.oid = c.reltype)          as typname
+FROM pg_catalog.pg_class c
+WHERE (c.relname = '$3' or c.oid = '$3' or c.relfilenode = '$3') -- and pg_catalog.pg_table_is_visible(c.oid)
+ORDER BY 1, 2;
+ "
+ exit 0
+fi
+##########################################################
+# Run a shell command. Useful when combined with repeat...
+##########################################################
+usage
+echo "Command 'lt $1' not defined,please check the command again."
