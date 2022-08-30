@@ -1,8 +1,8 @@
 # LightDB（22.1 & 22.2版本） FAQ
 ## 如何选择LightDB安装包
-下载地址：www.hs.net/lightdb, 注册账号登录后选择对应的下载版本 
+下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
-确定操作系统版本
+如何确定操作系统版本，我们以麒麟系统为例，如下
 ```
 # nkvers
 ############## Kylin Linux Version #################
@@ -24,6 +24,7 @@ CPU 运行模式：                   32-bit, 64-bit
 ```
 可以看出操作系统为麒麟V10，cpu架构为x86_64，则选择 lightdb-x-13.3-22.2-5950-kylinV10.x86_64.zip 进行下载安装 ，其中lightdb-x开始的包为数据库；
 lightdb-em开始的为LightDB PaaS原生服务平台。
+![img.png](img.png)
 ## LightDB如何进行逻辑备份、恢复
 ### 备份命令
 ```
