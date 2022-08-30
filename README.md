@@ -2,9 +2,9 @@
 
 - [1、如何选择LightDB安装包](https://github.com/hslightdb/LightDB-FAQ#1%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9lightdb%E5%AE%89%E8%A3%85%E5%8C%85)  
 - [2、LightDB如何进行逻辑备份、恢复](https://github.com/hslightdb/LightDB-FAQ#2lightdb%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%80%BB%E8%BE%91%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D)  
-- [3、如何进行LightDB客户端部署](##3、如何进行LightDB客户端部署)    
+- [3、如何进行LightDB客户端部署](https://github.com/hslightdb/LightDB-FAQ#3%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8Clightdb%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%83%A8%E7%BD%B2)    
 - [4、LightDB更改列属性语法](##4、LightDB更改列属性语法)  
-- [5、LightDB的递归语法](##5、LightDB的递归语法)  
+- [5、LightDB的递归语法](https://github.com/hslightdb/LightDB-FAQ#5lightdb%E7%9A%84%E9%80%92%E5%BD%92%E8%AF%AD%E6%B3%95)  
 - [6、如何确定LightDB当前连接是否已满](##6、如何确定LightDB当前连接是否已满)  
 - [7、如何安装LightDB程序客户端](##7、如何安装LightDB程序客户端)  
 - [8、如何实现LightDB访问Oracle表](##8、如何实现LightDB访问Oracle表)  
@@ -102,7 +102,7 @@ ltsql: error while loading shared libraries: libreadline.so.8: canot open shared
 # cd lightdb-x-13.3-22.2-5950-kylinV10sp1.x86_64/system-lib
 # rpm -ivh readline-8.0.3.ky10.x86_64.rpm
 ```
-##4、LightDB更改列属性语法
+## 4、LightDB更改列属性语法
 习惯于Oracle语法的同学，习惯用下面SQL执行更改列名和默认值等
 ```
 SQL> desc emp;
