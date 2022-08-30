@@ -80,15 +80,16 @@ export LD_LIBRARY_PATH=${LTHOME}/lib:${LTHOME}/lib/ltext:${LTHOME}/tools/lib64:$
 ```
 ### 3、执行. ~/.bashrc 使环境变量生效
 ### 4、验证
-如果执行ltsql lt_dump等命令成功返回结果，说明客户端部署正常，如果执行命令时显示缺少系统依赖包等问题，举例如下
+如果执行ltsql、lt_dump等命令成功返回结果，说明客户端部署正常，如果执行命令时显示缺少系统依赖包等问题，举例如下
 
 ```
+$ ltsql
 ltsql: error while loading shared libraries: libreadline.so.8: canot open shared object file
 ```
 上述错误说明系统缺少readline包，可以yum进行安装，如果配置yum环境受限，可以进入安装包的system-lib下使用rpm进行安装
 ```
-cd lightdb-x-13.3-22.2-5950-kylinV10sp1.x86_64/system-lib
-rpm -ivh readline-8.0.3.ky10.x86_64.rpm
+# cd lightdb-x-13.3-22.2-5950-kylinV10sp1.x86_64/system-lib
+# rpm -ivh readline-8.0.3.ky10.x86_64.rpm
 ```
 ## 4、LightDB 更改列属性语法
 习惯于Oracle语法的同学，习惯用下面SQL执行更改列名和默认值等
@@ -134,8 +135,9 @@ Indexes:
 \h alter table 
 ```
 ## 5、LightDB的递归语法
-我们知道Oracle的递归语句为
-Oracle:
+我们知道Oracle的递归语句为start with connect by语法。 
+
+Oracle：
 ```
 SELECT
 	DISTINCT ID,
@@ -278,7 +280,7 @@ order by
 	cte.module_name asc;
 ```
 ## 6、如何确定LightDB当前连接是否已满 
-查询当前
+查询SQL语句如下：
 ```
 SELECT NAME, setting::number as cnt FROM pg_settings WHERE NAME = 'max_connections'
 union all
@@ -291,9 +293,13 @@ select state ,count(*)  as cnt from pg_stat_activity group by state;
  idle            |  709
 (4 rows)
 ```
+说明：max_connections表示当前数据库最大连接数为2000
 ## 7、LightDB程序客户端
-类比于Oracle的客户端Pl/SQL developer,LightDB推荐使用 dbeaver，下载地址：  https://dbeaver.io/
-
+类比于Oracle的客户端PL/SQL developer，LightDB推荐使用 dbeaver，下载地址：  https://dbeaver.io/ 
+下载成功安装后，点击左上角加号进行登录，找到大象图标进行登录
+![img_1.png](img_1.png)
+填写数据库IP、端口、用户名、密码等信息，测试连接登录即可
+![img_2.png](img_2.png)
 ## 8、LightDB访问Oracle
 ```
 http://blog.itpub.net/29990276/viewspace-2903886/ 
