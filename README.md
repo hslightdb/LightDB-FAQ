@@ -1,4 +1,14 @@
 # LightDB（22.1 & 22.2版本） FAQ
+**1、如何选择LightDB安装包**  
+**2、LightDB如何进行逻辑备份、恢复**    
+**3、如何进行LightDB客户端部署**    
+**4、LightDB 更改列属性语法**    
+**5、LightDB的递归语法**    
+**6、如何确定LightDB当前连接是否已满**    
+**7、如何安装LightDB程序客户端**    
+**8、如何实现LightDB访问Oracle表**    
+**9、如何定位LightDB数据库中锁阻塞链情况**
+
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
@@ -294,13 +304,13 @@ select state ,count(*)  as cnt from pg_stat_activity group by state;
 (4 rows)
 ```
 说明：max_connections表示当前数据库最大连接数为2000
-## 7、LightDB程序客户端
+## 7、如何安装LightDB程序客户端
 类比于Oracle的客户端PL/SQL developer，LightDB推荐使用 dbeaver，下载地址：  https://dbeaver.io/ 
 下载成功安装后，点击左上角加号进行登录，找到大象图标进行登录
 ![img_1.png](img_1.png)
 填写数据库IP、端口、用户名、密码等信息，测试连接登录即可
 ![img_2.png](img_2.png)
-## 8、LightDB访问Oracle
+## 8、如何实现LightDB访问Oracle表
 ### 1、安装插件
 LightDB默认集成了oracle_fdw插件
 ```language
@@ -434,7 +444,7 @@ postgres=# select * from pg_foreign_data_wrapper;
  485121 | oracle_fdw      |       10 |     485116 |       485117 | {lightdb=U/lightdb} | 
 (3 rows)
 ```
-## 如何定位LightDB数据库中锁阻塞情况
+## 如何定位LightDB数据库中锁阻塞链情况
 执行下面SQL即可情况锁阻塞链情况：
 ```SQL
 WITH RECURSIVE
