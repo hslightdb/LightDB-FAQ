@@ -2,8 +2,7 @@
 
 - [1、如何选择LightDB安装包](##1、如何选择LightDB安装包)  
 - [2、LightDB如何进行逻辑备份、恢复](##2、LightDB如何进行逻辑备份、恢复)  
-- [3、如何进行LightDB客户端部署](##3、如何进行LightDB客户端部署)   
-- [3、如何进行LightDB客户端部署](##3、如何进行LightDB客户端部署)  
+- [3、如何进行LightDB客户端部署](##3、如何进行LightDB客户端部署)    
 - [4、LightDB更改列属性语法](##4、LightDB更改列属性语法)  
 - [5、LightDB的递归语法](##5、LightDB的递归语法)  
 - [6、如何确定LightDB当前连接是否已满](##6、如何确定LightDB当前连接是否已满)  
