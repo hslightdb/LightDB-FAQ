@@ -1,5 +1,5 @@
 # LightDB（22.1 & 22.2版本） FAQ
-## 如何选择LightDB安装包
+## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
 如何确定操作系统版本，我们以麒麟系统为例，如下
@@ -25,7 +25,7 @@ CPU 运行模式：                   32-bit, 64-bit
 可以看出操作系统为麒麟V10，cpu架构为x86_64，则选择 lightdb-x-13.3-22.2-5950-kylinV10.x86_64.zip 进行下载安装 ，其中lightdb-x开始的包为数据库；
 lightdb-em开始的为LightDB PaaS原生服务平台。
 ![img.png](img.png)
-## LightDB如何进行逻辑备份、恢复
+## 2、LightDB如何进行逻辑备份、恢复
 ### 备份命令
 ```
 PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d --if-exists -c -f subacc1 -v
@@ -44,7 +44,7 @@ PGPASSWORD=hundsun lt_dump -Fd -Ulightdb -h 10.19.36.28 -p 5432 -d fund60 -j8 -f
 PGPASSWORD=hundsun lt_restore fund60 -U lightdb -h 10.19.36.28 -p 5432 -n fund60acco1 -n fund60pub -j8 -d fund60 --section=pre-data --section=data --if-exists -c -v
 PGPASSWORD=hundsun lt_restore fund60 -U lightdb -h 10.19.36.28 -p 5432 -n fund60acco1 -n fund60pub -d fund60 --section=post-data --if-exists -c -v
 ```
-## 如何进行LightDB客户端部署
+## 3、如何进行LightDB客户端部署
 ### 1、安装包上传到客户端服务器
 解压并且给予相应的权限，应用服务器系统用户我们以ta6为例
 ```
@@ -90,7 +90,7 @@ ltsql: error while loading shared libraries: libreadline.so.8: canot open shared
 cd lightdb-x-13.3-22.2-5950-kylinV10sp1.x86_64/system-lib
 rpm -ivh readline-8.0.3.ky10.x86_64.rpm
 ```
-## LightDB 更改列属性语法
+## 4、LightDB 更改列属性语法
 习惯于Oracle语法的同学，习惯用下面SQL执行更改列名和默认值等
 ```
 SQL> desc emp;
@@ -133,7 +133,8 @@ Indexes:
 
 \h alter table 
 ```
-## 递归语法
+## 5、LightDB的递归语法
+我们知道Oracle的递归语句为
 Oracle:
 ```
 SELECT
@@ -293,7 +294,7 @@ select state ,count(*)  as cnt from pg_stat_activity group by state;
 ## 7、LightDB程序客户端
 类比于Oracle的客户端Pl/SQL developer,LightDB推荐使用 dbeaver，下载地址：  https://dbeaver.io/
 
-##8、LightDB访问Oracle
+## 8、LightDB访问Oracle
 ```
 http://blog.itpub.net/29990276/viewspace-2903886/ 
 ```
