@@ -340,7 +340,7 @@ export PATH=$ORACLE_HOME:$ORACLE_HOME/OPatch:$GGATE:$PATH
 export LD_LIBRARY_PATH=$ORACLE_HOME:/usr/lib:$GGATE:$LD_LIBRARY_PATH
 export TNS_ADMIN=$ORACLE_HOME/network/admin
 ```
-### 创建foreign 表
+### 3、创建foreign 表
 ```language
 create server oradb foreign data wrapper oracle_fdw options (dbserver '//10.0.4.4:1521/orcl1');
 --对应删除命令
