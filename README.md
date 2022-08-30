@@ -444,7 +444,7 @@ postgres=# select * from pg_foreign_data_wrapper;
  485121 | oracle_fdw      |       10 |     485116 |       485117 | {lightdb=U/lightdb} | 
 (3 rows)
 ```
-## 如何定位LightDB数据库中锁阻塞链情况
+## 9、如何定位LightDB数据库中锁阻塞链情况
 执行下面SQL即可情况锁阻塞链情况：
 ```SQL
 WITH RECURSIVE
