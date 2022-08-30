@@ -1,6 +1,6 @@
 # LightDB（22.1 & 22.2版本） FAQ
 ## 如何选择LightDB安装包
-下载地址：www.hs.net/lightdb, 注册账号登录后选择对应的版本 
+下载地址：www.hs.net/lightdb, 注册账号登录后选择对应的下载版本 
 
 确定操作系统版本
 ```
