@@ -1,7 +1,7 @@
 # LightDB（22.1 & 22.2版本） FAQ
 
 - [1、如何选择LightDB安装包](https://github.com/hslightdb/LightDB-FAQ#1%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9lightdb%E5%AE%89%E8%A3%85%E5%8C%85)  
-- [2、LightDB如何进行逻辑备份、恢复](##2、LightDB如何进行逻辑备份、恢复)  
+- [2、LightDB如何进行逻辑备份、恢复](https://github.com/hslightdb/LightDB-FAQ#2lightdb%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%80%BB%E8%BE%91%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D)  
 - [3、如何进行LightDB客户端部署](##3、如何进行LightDB客户端部署)    
 - [4、LightDB更改列属性语法](##4、LightDB更改列属性语法)  
 - [5、LightDB的递归语法](##5、LightDB的递归语法)  
