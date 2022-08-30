@@ -1,13 +1,15 @@
 # LightDB（22.1 & 22.2版本） FAQ
-**1、如何选择LightDB安装包**  
-**2、LightDB如何进行逻辑备份、恢复**    
-**3、如何进行LightDB客户端部署**    
-**4、LightDB 更改列属性语法**    
-**5、LightDB的递归语法**    
-**6、如何确定LightDB当前连接是否已满**    
-**7、如何安装LightDB程序客户端**    
-**8、如何实现LightDB访问Oracle表**    
-**9、如何定位LightDB数据库中锁阻塞链情况**
+
+- [1、如何选择LightDB安装包](##1、如何选择LightDB安装包)  
+- [2、LightDB如何进行逻辑备份、恢复](##2、LightDB如何进行逻辑备份、恢复)  
+- [3、如何进行LightDB客户端部署](##3、如何进行LightDB客户端部署)   
+- [3、如何进行LightDB客户端部署](##3、如何进行LightDB客户端部署)  
+- [4、LightDB更改列属性语法](##4、LightDB更改列属性语法)  
+- [5、LightDB的递归语法](##5、LightDB的递归语法)  
+- [6、如何确定LightDB当前连接是否已满](##6、如何确定LightDB当前连接是否已满)  
+- [7、如何安装LightDB程序客户端](##7、如何安装LightDB程序客户端)  
+- [8、如何实现LightDB访问Oracle表](##8、如何实现LightDB访问Oracle表)  
+- [9、如何定位LightDB数据库中锁阻塞链情况](##9、如何定位LightDB数据库中锁阻塞链情况)  
 
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
@@ -101,7 +103,7 @@ ltsql: error while loading shared libraries: libreadline.so.8: canot open shared
 # cd lightdb-x-13.3-22.2-5950-kylinV10sp1.x86_64/system-lib
 # rpm -ivh readline-8.0.3.ky10.x86_64.rpm
 ```
-## 4、LightDB 更改列属性语法
+##4、LightDB更改列属性语法
 习惯于Oracle语法的同学，习惯用下面SQL执行更改列名和默认值等
 ```
 SQL> desc emp;
