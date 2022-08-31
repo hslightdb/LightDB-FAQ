@@ -10,6 +10,7 @@
 - [8、如何实现LightDB访问Oracle表](https://github.com/hslightdb/LightDB-FAQ#8%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0lightdb%E8%AE%BF%E9%97%AEoracle%E8%A1%A8)  
 - [9、如何定位LightDB数据库中锁阻塞链情况](https://github.com/hslightdb/LightDB-FAQ#9%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8Dlightdb%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%94%81%E9%98%BB%E5%A1%9E%E9%93%BE%E6%83%85%E5%86%B5)  
 - [10、如果用户无法在自己的数据库中创建和删除schema怎么办](https://github.com/hslightdb/LightDB-FAQ#9%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8Dlightdb%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%94%81%E9%98%BB%E5%A1%9E%E9%93%BE%E6%83%85%E5%86%B5)  
+- [10、11、LightDB标准的创建用户语句是怎样的](https://github.com/hslightdb/LightDB-FAQ#9%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8Dlightdb%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%94%81%E9%98%BB%E5%A1%9E%E9%93%BE%E6%83%85%E5%86%B5)  
 
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
@@ -641,5 +642,52 @@ lightdb@postgres=# \c fund60 fund60query
 Password for user fund60query: 
 You are now connected to database "fund60" as user "fund60query".
 fund60query@fund60=> create schema fund60query;
+CREATE SCHEMA
+```
+## 11、LightDB标准的创建用户语句是怎样的
+我们以TA6为例子
+```sql
+$ ltsql
+ltsql (13.3-22.2)
+Type "help" for help.
+
+lightdb@postgres=# create user fund60acco1 password 'fund60acco1';
+CREATE ROLE
+lightdb@postgres=# create user fund60acco2 password 'fund60acco2';
+CREATE ROLE
+lightdb@postgres=# create user fund60pub password 'fund60pub';
+CREATE ROLE
+lightdb@postgres=# create user fund60query password 'fund60query';
+CREATE ROLE
+lightdb@postgres=# create user fund60trans1 password 'fund60trans1';
+CREATE ROLE
+lightdb@postgres=# create user fund60trans2 password 'fund60trans2';
+CREATE ROLE
+lightdb@postgres=# create database fund60;
+CREATE DATABASE
+lightdb@postgres=# grant all privileges on database fund60 to fund60trans1;
+GRANT
+lightdb@postgres=# grant all privileges on database fund60 to fund60trans2;
+GRANT
+lightdb@postgres=# grant all privileges on database fund60 to fund60acco1;
+GRANT
+lightdb@postgres=# grant all privileges on database fund60 to fund60acco2;
+GRANT
+lightdb@postgres=# grant all privileges on database fund60 to fund60pub;
+GRANT
+lightdb@postgres=# grant all privileges on database fund60 to fund60query;
+GRANT
+```
+再分别登录到自己到库中创建和用户同名到schema，下面只举了2个例子
+```
+lightdb@postgres=# \c fund60 fund60query 
+Password for user fund60query: 
+You are now connected to database "fund60" as user "fund60query".
+fund60query@fund60=> create schema fund60query;
+CREATE SCHEMA
+fund60query@fund60=> \c fund60 fund60pub
+Password for user fund60pub: 
+You are now connected to database "fund60" as user "fund60pub".
+fund60pub@fund60=> create schema fund60pub;
 CREATE SCHEMA
 ```
