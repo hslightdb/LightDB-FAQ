@@ -593,6 +593,7 @@ FROM blocking_lock ORDER BY seq;
 ```
 
 ## 10、如果用户无法在自己的数据库中创建和删除schema怎么办
+### 1、第一种情况一个数据库对应一个用户和对应schema
 ```
 lightdb@postgres=# create user hundsun password 'hundsun';
 CREATE ROLE
@@ -609,10 +610,36 @@ $ ltsql -p 5435
 ltsql (13.3-22.2)
 Type "help" for help.
 
-lightdb@postgres=# grant all privileges on database hundsun to hundsun;
-GRANT
+lightdb@postgres=# alter database hundsun owner to hundsun;
+ALTER DATABASE
 lightdb@postgres=# \c hundsun hundsun
 You are now connected to database "hundsun" as user "hundsun".
 hundsun@hundsun=> create schema hundsun;
+CREATE SCHEMA
+```
+
+### 2、第二种情况一个数据库对应多个用户和多个schema
+我们以TA6为例子
+```
+create user fund60acco1 password 'fund60acco1';
+create user fund60acco2 password 'fund60acco2';
+create user fund60pub password 'fund60pub';
+create user fund60query password 'fund60query';
+create user fund60trans1 password 'fund60trans1';
+create user fund60trans2 password 'fund60trans2';
+create database fund60;
+grant all privileges on database fund60 to fund60trans1;
+grant all privileges on database fund60 to fund60trans2;
+grant all privileges on database fund60 to fund60acco1;
+grant all privileges on database fund60 to fund60acco2;
+grant all privileges on database fund60 to fund60pub;
+grant all privileges on database fund60 to fund60query;
+```
+举例：使用fund60query用户登录到fund60数据库下创建同名schema
+```
+lightdb@postgres=# \c fund60 fund60query 
+Password for user fund60query: 
+You are now connected to database "fund60" as user "fund60query".
+fund60query@fund60=> create schema fund60query;
 CREATE SCHEMA
 ```
