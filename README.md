@@ -6,7 +6,7 @@
 - [4、LightDB更改列属性语法](https://github.com/hslightdb/LightDB-FAQ#4lightdb%E6%9B%B4%E6%94%B9%E5%88%97%E5%B1%9E%E6%80%A7%E8%AF%AD%E6%B3%95)  
 - [5、LightDB的递归语法](https://github.com/hslightdb/LightDB-FAQ#5lightdb%E7%9A%84%E9%80%92%E5%BD%92%E8%AF%AD%E6%B3%95)  
 - [6、如何确定LightDB当前连接是否已满](https://github.com/hslightdb/LightDB-FAQ#6%E5%A6%82%E4%BD%95%E7%A1%AE%E5%AE%9Alightdb%E5%BD%93%E5%89%8D%E8%BF%9E%E6%8E%A5%E6%98%AF%E5%90%A6%E5%B7%B2%E6%BB%A1)  
-- [7、如何安装LightDB程序客户端](https://github.com/hslightdb/LightDB-FAQ#7%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85lightdb%E7%A8%8B%E5%BA%8F%E5%AE%A2%E6%88%B7%E7%AB%AF)  
+- [7、如何配置LightDB集成开发环境](https://github.com/hslightdb/LightDB-FAQ#7%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85lightdb%E7%A8%8B%E5%BA%8F%E5%AE%A2%E6%88%B7%E7%AB%AF)  
 - [8、如何实现LightDB访问Oracle表](https://github.com/hslightdb/LightDB-FAQ#8%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0lightdb%E8%AE%BF%E9%97%AEoracle%E8%A1%A8)  
 - [9、如何定位LightDB数据库中锁阻塞链情况](https://github.com/hslightdb/LightDB-FAQ#9%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8Dlightdb%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%94%81%E9%98%BB%E5%A1%9E%E9%93%BE%E6%83%85%E5%86%B5)  
 - [10、如果用户无法在自己的数据库中创建和删除schema怎么办](https://github.com/hslightdb/LightDB-FAQ#10%E5%A6%82%E6%9E%9C%E7%94%A8%E6%88%B7%E6%97%A0%E6%B3%95%E5%9C%A8%E8%87%AA%E5%B7%B1%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%92%8C%E5%88%A0%E9%99%A4schema%E6%80%8E%E4%B9%88%E5%8A%9E)  
@@ -298,12 +298,21 @@ select state ,count(*)  as cnt from pg_stat_activity group by state;
 (4 rows)
 ```
 说明：max_connections表示当前数据库最大连接数为2000
-## 7、如何安装LightDB程序客户端
+## 7、如何配置LightDB集成开发环境
 类比于Oracle的客户端PL/SQL developer，LightDB推荐使用 dbeaver，下载地址：  https://dbeaver.io/ 
-下载成功安装后，点击左上角加号进行登录，找到大象图标进行登录
-![img_1.png](img_1.png)
-填写数据库IP、端口、用户名、密码等信息，测试连接登录即可
-![img_2.png](img_2.png)
+下载成功安装后，找到数据库->驱动管理器->新建
+![img_3.png](img_3.png)
+![img_4.png](img_4.png)  
+填入如下内容，同时选择"库"选项，添加LightDB驱动  
+![img_5.png](img_5.png)
+![img_8.png](img_8.png)  
+上述操作完成后，点击确定  
+![img_6.png](img_6.png)  
+关闭之后点击左上角加号，选择LightDB驱动程序  
+![img_7.png](img_7.png)
+
+填写数据库IP、端口、用户名、密码等信息，测试连接登录即可  
+![img_9.png](img_9.png)
 ## 8、如何实现LightDB访问Oracle表
 ### 1、安装插件
 LightDB默认集成了oracle_fdw插件
