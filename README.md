@@ -299,7 +299,9 @@ select state ,count(*)  as cnt from pg_stat_activity group by state;
 ```
 说明：max_connections表示当前数据库最大连接数为2000
 ## 7、如何配置LightDB集成开发环境
-Oracle一般习惯使用PL/SQL developer集成开发环境，同样LightDB推荐使用dbeaver，下载地址：  https://dbeaver.io/ 
+Oracle一般习惯使用PL/SQL developer做为集成开发环境，同样LightDB为了使用自己的存储过程特性等特性，推荐使用dbeaver集成环境并且需要配置LightDB驱动。  
+LightDB驱动下载地址：https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc    
+dbeaver下载地址：https://dbeaver.io/ 
 下载成功安装后，找到数据库->驱动管理器->新建  
 ![img_3.png](img_3.png)
 ![img_4.png](img_4.png)  
