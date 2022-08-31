@@ -303,12 +303,12 @@ Oracle一般习惯使用PL/SQL developer集成开发环境，同样LightDB推荐
 下载成功安装后，找到数据库->驱动管理器->新建  
 ![img_3.png](img_3.png)
 ![img_4.png](img_4.png)  
-填入如下内容，同时选择"库"选项，添加LightDB驱动  
+点击"新建"后填入如下内容，同时选择"库"选项，添加LightDB驱动  
 ![img_5.png](img_5.png)
 ![img_8.png](img_8.png)  
-上述操作完成后，点击确定  
+上述操作完成后，点击"确定"  
 ![img_6.png](img_6.png)  
-关闭之后点击左上角加号，选择LightDB驱动程序  
+点击"关闭"之后，点击左上角加号，选择LightDB驱动程序  
 ![img_7.png](img_7.png)
 
 填写数据库IP、端口、用户名、密码等信息，测试连接登录即可  
