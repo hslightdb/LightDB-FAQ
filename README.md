@@ -9,6 +9,7 @@
 - [7、如何安装LightDB程序客户端](https://github.com/hslightdb/LightDB-FAQ#7%E5%A6%82%E4%BD%95%E5%AE%89%E8%A3%85lightdb%E7%A8%8B%E5%BA%8F%E5%AE%A2%E6%88%B7%E7%AB%AF)  
 - [8、如何实现LightDB访问Oracle表](https://github.com/hslightdb/LightDB-FAQ#8%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0lightdb%E8%AE%BF%E9%97%AEoracle%E8%A1%A8)  
 - [9、如何定位LightDB数据库中锁阻塞链情况](https://github.com/hslightdb/LightDB-FAQ#9%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8Dlightdb%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%94%81%E9%98%BB%E5%A1%9E%E9%93%BE%E6%83%85%E5%86%B5)  
+- [10、如果用户无法在自己的数据库中创建和删除schema怎么办](https://github.com/hslightdb/LightDB-FAQ#9%E5%A6%82%E4%BD%95%E5%AE%9A%E4%BD%8Dlightdb%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E9%94%81%E9%98%BB%E5%A1%9E%E9%93%BE%E6%83%85%E5%86%B5)  
 
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
@@ -589,4 +590,29 @@ UNION ALL
   )
 SELECT concat(lpad('=> ', 4*depth, ' '),pid::text) AS "PID", lock_info AS Lock_Info, lock_state AS State
 FROM blocking_lock ORDER BY seq;
+```
+
+## 10、如果用户无法在自己的数据库中创建和删除schema怎么办
+```
+lightdb@postgres=# create user hundsun password 'hundsun';
+CREATE ROLE
+lightdb@postgres=# create database hundsun;
+CREATE DATABASE
+lightdb@postgres=# \c hundsun hundsun
+You are now connected to database "hundsun" as user "hundsun".
+hundsun1@hundsun1=> create schema hundsun;
+ERROR:  permission denied for database hundsun
+```
+需要给用户赋予all privileges权限
+```
+$ ltsql -p 5435
+ltsql (13.3-22.2)
+Type "help" for help.
+
+lightdb@postgres=# grant all privileges on database hundsun to hundsun;
+GRANT
+lightdb@postgres=# \c hundsun hundsun
+You are now connected to database "hundsun" as user "hundsun".
+hundsun@hundsun=> create schema hundsun;
+CREATE SCHEMA
 ```
