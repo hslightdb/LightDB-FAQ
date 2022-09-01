@@ -694,13 +694,13 @@ fund60pub@fund60=> create schema fund60pub;
 CREATE SCHEMA
 ```
 ## 12、如何下载LightDB JDBC驱动
-maven 地址，选择对应版本进行下载
+maven 地址，选择跟数据库对应版本进行下载
 https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc
 ```
 <!-- https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc -->
 <dependency>
     <groupId>io.github.hslightdb</groupId>
     <artifactId>lightdb-jdbc</artifactId>
-    <version>22.2.1-221011</version>
+    <version>22.3.1-221201</version>
 </dependency>
 ```
