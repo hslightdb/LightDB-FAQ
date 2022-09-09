@@ -301,19 +301,39 @@ select state ,count(*)  as cnt from pg_stat_activity group by state;
  idle            |  709
 (4 rows)
 ```
-如果确定连接已满，需要登录到LightDB
+说明：max_connections表示当前数据库最大连接数为2000  
+
+### 如果确定连接已满，接下来怎么排查？
+如果ltsql没有指定`-h host/ip`,也没有配置`LTHOST`/`PGHOST`环境变量, 那么默认会走unix domain socket, 在这种场景tcp_keepalives相关选项不起作用, 查询时显示0, 示例如下:
 ```
-lightdb@postgres=# show tcp_%;
+$ ltsql -p 5432
+ltsql (13.8-22.3)
+Type "help" for help.
+
+test=# show tcp_keepalives%;
           name           | setting |                 description                  
 -------------------------+---------+----------------------------------------------
- tcp_keepalives_count    | 9       | Maximum number of TCP keepalive retransmits.
- tcp_keepalives_idle     | 7200    | Time between issuing TCP keepalives.
- tcp_keepalives_interval | 75      | Time between TCP keepalive retransmits.
- tcp_user_timeout        | 0       | TCP user timeout.
-(4 rows)
+ tcp_keepalives_count    | 0       | Maximum number of TCP keepalive retransmits.
+ tcp_keepalives_idle     | 0       | Time between issuing TCP keepalives.
+ tcp_keepalives_interval | 0       | Time between TCP keepalive retransmits.
+(3 rows)
+```
+如果指定IP,则可显示lightdb.conf中配置的参数值:
+```
+$ ltsql -p 5432 -h 127.0.0.1
+ltsql (13.8-22.3)
+Type "help" for help.
+
+test=# show tcp_keepalives%;
+          name           | setting |                 description                  
+-------------------------+---------+----------------------------------------------
+ tcp_keepalives_count    | 5       | Maximum number of TCP keepalive retransmits.
+ tcp_keepalives_idle     | 300     | Time between issuing TCP keepalives.
+ tcp_keepalives_interval | 30      | Time between TCP keepalive retransmits.
+(3 rows)
 ```
 
-说明：max_connections表示当前数据库最大连接数为2000
+
 ## 7、如何配置LightDB集成开发环境
 Oracle一般习惯使用PL/SQL developer做为集成开发环境，同样LightDB为了使用自己的存储过程特性等特性，推荐使用dbeaver集成环境并且需要配置LightDB驱动。  
 LightDB驱动下载地址：https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc    
