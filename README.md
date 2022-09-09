@@ -791,12 +791,6 @@ lt_ctl -D $LTDATA reload
 
 如果希望启用auto_explain，则需要修改`lightdb.conf`中的`shared_preload_libraries`，在其中添加auto_explain，然后重启数据库。**对于LightDB单机版，可以直接执行lt_ctl -D $LTDATA restart即可，但如果安装的是LightDB高可用或分布式，则务必按高可用和分布式的停止与启动步骤进行操作。**
 
-## 18、查看当前正在执行的SQL是否被阻塞了
-
-可以查看LightDB数据库日志，看是否有`"process pid still waiting for xxxLock ......"`的字样，如果有的话，顺着pid在上下文查找，就可以找到process pid对应的SQL。  
-
-![img_12.png](img_12.png)
-
 ## 19、查看安装了哪些extension
 
 - 查看所有可用的extension
