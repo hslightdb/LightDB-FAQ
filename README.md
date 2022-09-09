@@ -791,6 +791,12 @@ lt_ctl -D $LTDATA reload
 
 如果希望启用auto_explain，则需要修改`lightdb.conf`中的`shared_preload_libraries`，在其中添加auto_explain，然后重启数据库。**对于LightDB单机版，可以直接执行lt_ctl -D $LTDATA restart即可，但如果安装的是LightDB高可用或分布式，则务必按高可用和分布式的停止与启动步骤进行操作。**
 
+## 18、如何通过lt_probackup对数据库进行物理备份和恢复
+
+
+
+
+
 ## 19、查看安装了哪些extension
 
 - 查看所有可用的extension
