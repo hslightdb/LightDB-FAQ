@@ -12,6 +12,7 @@
 - [10、如果用户无法在自己的数据库中创建和删除schema怎么办](https://github.com/hslightdb/LightDB-FAQ#10%E5%A6%82%E6%9E%9C%E7%94%A8%E6%88%B7%E6%97%A0%E6%B3%95%E5%9C%A8%E8%87%AA%E5%B7%B1%E7%9A%84%E6%95%B0%E6%8D%AE%E5%BA%93%E4%B8%AD%E5%88%9B%E5%BB%BA%E5%92%8C%E5%88%A0%E9%99%A4schema%E6%80%8E%E4%B9%88%E5%8A%9E)  
 - [11、LightDB标准的创建用户语句是怎样的](https://github.com/hslightdb/LightDB-FAQ#11lightdb%E6%A0%87%E5%87%86%E7%9A%84%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7%E8%AF%AD%E5%8F%A5%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9A%84)  
 - [12、如何下载LightDB JDBC驱动](https://github.com/hslightdb/LightDB-FAQ#12%E5%A6%82%E4%BD%95%E4%B8%8B%E8%BD%BDlightdb-jdbc%E9%A9%B1%E5%8A%A8)
+- [13、选择图形化安装LightDB 无法启动安装界面怎么办](https://github.com/hslightdb/LightDB-FAQ#13gui%E5%AE%89%E8%A3%85%E7%95%8C%E9%9D%A2%E4%B8%BA%E4%BB%80%E4%B9%88%E5%BC%B9%E4%B8%8D%E5%87%BA%E6%9D%A5%E6%98%AF%E5%90%A6%E6%94%AF%E6%8C%81%E5%91%BD%E4%BB%A4%E8%A1%8C%E5%AE%89%E8%A3%85%E6%A8%A1%E5%BC%8F)
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
@@ -716,7 +717,7 @@ https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc
     <version>22.3.1-221201</version>
 </dependency>
 ```
-## 13、GUI安装界面为什么弹不出来？是否支持命令行安装模式？
+## 13、选择图形化安装LightDB 无法启动安装界面怎么办
 
 GUI安装界面弹不出来，一般来说有两种原因：
 
