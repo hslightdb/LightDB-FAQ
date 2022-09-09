@@ -13,6 +13,9 @@
 - [11、LightDB标准的创建用户语句是怎样的](https://github.com/hslightdb/LightDB-FAQ#11lightdb%E6%A0%87%E5%87%86%E7%9A%84%E5%88%9B%E5%BB%BA%E7%94%A8%E6%88%B7%E8%AF%AD%E5%8F%A5%E6%98%AF%E6%80%8E%E6%A0%B7%E7%9A%84)  
 - [12、如何下载LightDB JDBC驱动](https://github.com/hslightdb/LightDB-FAQ#12%E5%A6%82%E4%BD%95%E4%B8%8B%E8%BD%BDlightdb-jdbc%E9%A9%B1%E5%8A%A8)
 - [13、选择图形化安装LightDB 无法启动安装界面怎么办](https://github.com/hslightdb/LightDB-FAQ#13%E9%80%89%E6%8B%A9%E5%9B%BE%E5%BD%A2%E5%8C%96%E5%AE%89%E8%A3%85lightdb-%E6%97%A0%E6%B3%95%E5%90%AF%E5%8A%A8%E5%AE%89%E8%A3%85%E7%95%8C%E9%9D%A2%E6%80%8E%E4%B9%88%E5%8A%9E)
+- [14、查看LightDB安装目录、实例目录、归档目录](https://github.com/hslightdb/LightDB-FAQ#14%E6%9F%A5%E7%9C%8Blightdb%E5%AE%89%E8%A3%85%E7%9B%AE%E5%BD%95%E5%AE%9E%E4%BE%8B%E7%9B%AE%E5%BD%95%E5%BD%92%E6%A1%A3%E7%9B%AE%E5%BD%95)
+- [15、LightDB包含哪些日志?](https://github.com/hslightdb/LightDB-FAQ#15lightdb%E5%8C%85%E5%90%AB%E5%93%AA%E4%BA%9B%E6%97%A5%E5%BF%97)
+
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
@@ -741,9 +744,12 @@ ls $LTHOME/archive  # 查看归档目录
 
 ## 15、LightDB包含哪些日志？
 
-数据库日志，位于$LTDATA/log目录中。  
-ltcluster日志，位于`$LTHOME/etc/ltcluster/`下，仅高可用版本有。  
-keepalived日志，位于`/var/log/`下，并且在`$LTHOME/etc/keepalived/keepalived_lightdb.log`有keepalived检测lightdb的心跳日志，仅高可用版本需启用keepalived。  
+**数据库日志:**  
+位于$LTDATA/log目录中。  
+**ltcluster日志:**    
+位于`$LTHOME/etc/ltcluster/`下，仅高可用版本有。  
+**keepalived日志:**  
+位于`/var/log/`下，并且在`$LTHOME/etc/keepalived/keepalived_lightdb.log`有keepalived检测lightdb的心跳日志，仅高可用版本需启用keepalived。  
 
 
 ## 16、查看数据库日志中的错误信息
@@ -901,7 +907,6 @@ select * from pg_postmaster_start_time();
 
 ```
 select * from pg_current_xact_id();
-
 ```
 
 ## 29、看LightDB实例概要信息
@@ -969,7 +974,6 @@ Time of latest checkpoint:            Mon 04 Jul 2022 08:35:03 PM CST
 
 ```
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf cluster show
-
 ```
 
 示例结果：
@@ -979,7 +983,6 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf cluster show
 ----+---------+---------+-----------+----------+----------+----------+----------+-----------------------------------
  1  | node199 | primary | * running |          | default  | 100  | 1 | host=node199 port=5432 user=ltcluster dbname=ltcluster connect_timeout=2
  2  | node193 | standby |   running | node199  | default  | 100  | 1 | host=node199 port=5432 user=ltcluster dbname=ltcluster connect_timeout=2
-
 ```
 
 也可以使用LightDB-EM查看是单机部署还是高可用部署。
