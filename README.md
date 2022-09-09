@@ -721,8 +721,13 @@ https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc
 
 GUI安装界面弹不出来，一般来说有两种原因：
 
-- Linux系统未安装GUI程序所需的依赖包
-- Linux系统未正确设置DISPLAY环境变量，或者Windows未正确运行Xmanager - Passive
+- 首先，缺人Linux系统是否已安装GUI程序所需的依赖包
+```
+yum install -y libXtst
+yum install -y xterm
+yum install -y xorg-x11-xauth
+```
+- 其次，Linux系统未正确设置DISPLAY环境变量，或者Windows未正确运行Xmanager - Passive
 
 如果无法满足上述条件，可以使用命令行安装模式，LightDB支持命令行安装模式，且与GUI安装相比仅在安装向导上有所差异，其余并无不同。
 
