@@ -732,6 +732,7 @@ yum install -y xorg-x11-xauth
 如果无法满足上述条件，可以使用命令行安装模式，LightDB支持命令行安装模式，且与GUI安装相比仅在安装向导上有所差异，其余并无不同。
 
 ## 14、查看LightDB安装目录、实例目录、归档目录
+数据库安装完成后，环境变量会写到~/.bashrc中，默认情况下数据库相关位置如下：
 ```shell
 ls $LTHOME          # 查看安装目录
 ls $LTDATA          # 查看实例目录
@@ -740,34 +741,27 @@ ls $LTHOME/archive  # 查看归档目录
 
 ## 15、LightDB包含哪些日志？
 
-数据库日志，位于$LTDATA/log目录中。
+数据库日志，位于$LTDATA/log目录中。  
+ltcluster日志，位于`$LTHOME/etc/ltcluster/`下，仅高可用版本有。  
+keepalived日志，位于`/var/log/`下，并且在`$LTHOME/etc/keepalived/keepalived_lightdb.log`有keepalived检测lightdb的心跳日志，仅高可用版本需启用keepalived。  
 
-ltcluster日志，位于`$LTHOME/etc/ltcluster/`下，仅高可用版本有。
 
-keepalived日志，位于`/var/log/`下，并且在`$LTHOME/etc/keepalived/keepalived_lightdb.log`有keepalived检测lightdb的心跳日志，仅高可用版本需启用keepalived。
-
-## 16、查看数据库最新日志
-
-LightDB数据库日志路径为`$LTDATA/log/`，日志文件命名格式为`lightdb-yyyy-mm-dd_hhmmss.log`，可以此找到最新的日志文件，然后用`tail`命令循环查看指定行数的最新日志内容，如下图所示。
-
-```
-tail -fn 10 lightdb-yyyy-mm-dd_hhmmss.log
-```
-![img_11.png](img_11.png)
-
-## 17、查看数据库日志中的错误信息
+## 16、查看数据库日志中的错误信息
 
 LightDB日志中的错误信息包含`ERROR`或`FATAL`标签，可以此为关键词从日志文件中过滤错误行。
 
+**单次查看当前错误日志**
 ```shell
-# 单次查看当前错误日志
+cd $LTDATA/log
 cat lightdb-yyyy-mm-dd_hhmmss.log | grep -E 'ERROR|FATAL'
-
-# 实时监控最新错误日志
+```
+**实时监控最新错误日志**
+```
+cd $LTDATA/log
 tail -fn 10 lightdb-yyyy-mm-dd_hhmmss.log | grep -E 'ERROR|FATAL'
 ```
 
-## 18、查看是否开启了慢日志，开启与关闭慢日志
+## 17、查看是否开启了慢日志，开启与关闭慢日志
 
 在LightDB中慢日志配置参数有两处：数据库自身和auto_explain插件，使用`show`可以查看这两个参数。
 
@@ -791,19 +785,18 @@ lt_ctl -D $LTDATA reload
 
 如果希望启用auto_explain，则需要修改`lightdb.conf`中的`shared_preload_libraries`，在其中添加auto_explain，然后重启数据库。**对于LightDB单机版，可以直接执行lt_ctl -D $LTDATA restart即可，但如果安装的是LightDB高可用或分布式，则务必按高可用和分布式的停止与启动步骤进行操作。**
 
-## 20、查看当前正在执行的SQL是否被阻塞了
+## 18、查看当前正在执行的SQL是否被阻塞了
 
 可以查看LightDB数据库日志，看是否有`"process pid still waiting for xxxLock ......"`的字样，如果有的话，顺着pid在上下文查找，就可以找到process pid对应的SQL。  
 
 ![img_12.png](img_12.png)
 
-## 21、查看安装了哪些extension
+## 19、查看安装了哪些extension
 
 - 查看所有可用的extension
 
 ```plsql
 select * from pg_available_extensions;
-
 ```
 
 - 查看当前启用的extension
@@ -811,7 +804,7 @@ select * from pg_available_extensions;
 ```plsql
 select * from pg_extension;
 ```
-## 22、查看按大小排序的前20张表
+## 20、查看按大小排序的前20张表
 
 ```plsql
 -- 查出按大小（table_size + index_size）排序的前20张表，并分离table_size和index_size
@@ -835,11 +828,11 @@ FROM (
 LIMIT 20;
 ```
 
-## 23、查看LightDB当前的整体负载
+## 21、查看LightDB当前的整体负载
 
 查看LightDB当前整体负载，可以简单地使用top命令查看CPU利用率、内存使用情况、IO等指标信息，也可以使用LightDB EM来实时监控LightDB与服务器主机的各项指标。
 
-## 24、查看LightDB的生效配置，修改会话配置、全局配置
+## 22、查看LightDB的生效配置，修改会话配置、全局配置
 
 可以用show语句查看LightDB当前的生效配置，show语句有以下几种用法：
 
@@ -849,7 +842,6 @@ SHOW ALL;    -- 查看所有配置参数
 SHOW name%;  -- 查看前缀为name的配置参数
 SHOW %name;  -- 查看后缀为name的配置参数
 SHOW %name%; -- 查看名字中间包含name的配置参数
-
 ```
 
 修改配置参数有两种级别：会话级和全局级。
@@ -862,7 +854,7 @@ SET [ SESSION | LOCAL ] configuration_parameter { TO | = } { value | 'value' | D
 ALTER SYSTEM SET configuration_parameter { TO | = } { value | 'value' | DEFAULT };
 ```
 
-## 25、什么是vacuum？为什么要执行vacuum？怎么确定vacuum是否成功？
+## 23、什么是vacuum？为什么要执行vacuum？怎么确定vacuum是否成功？
 
 vacuum用于清理数据库表中的dead tuples，因为LightDB MVCC不使用undo日志，而是将update、delete修改或删除前的记录保留在表中，并打上一个标记，对于update还会插入一条更新后的新纪录，带有这种标记的tuple叫做dead tuple，也就是死元组。
 
@@ -870,20 +862,20 @@ vacuum用于清理数据库表中的dead tuples，因为LightDB MVCC不使用und
 
 vacuum语句基本用法有两种，一种是直接执行vacuum，另一种是vcuum tablename，前者对当前database中的所有表进行清理，后者仅对指定的表进行清理，执行成功时，客户端会返回一行VACUUM信息。
 
-## 26、查看最近的检查点执行时间
+## 24、查看最近的检查点执行时间
 
 ```
 lt_controldata $LTDATA | grep "Time of latest checkpoint:"
 ```
 
-## 27、怎么查看checkpoint执行频率？怎么查看auto vacuum频率？
+## 25、怎么查看checkpoint执行频率？怎么查看auto vacuum频率？
 
 ```
 show checkpoint_timeout;  -- 查看checkpoint频率
 show autovacuum_naptime;  -- 查看autovacuum频率
 ```
 
-## 28、lt_wal目录过大，怎么确定是否可以删除？如何删除?
+## 26、lt_wal目录过大，怎么确定是否可以删除？如何删除?
 
 先使用`lt_controldata`获得`Latest checkpoint's REDO WAL file`，如下所示。
 
@@ -899,49 +891,48 @@ lt_archivecleanup -d $LTDATA/lt_wal last_checkpoint_redo_wal_file   # 删除未�
 lt_archivecleanup -d $LTHOME/archive last_checkpoint_redo_wal_file  # 删除已归档的WAL文件
 ```
 ![img_14.png](img_14.png)
-## 29、查看LightDB启动时间
+## 27、查看LightDB启动时间
 
 ```
 select * from pg_postmaster_start_time();
 ```
 
-## 30、查看当前事务号
+## 28、查看当前事务号
 
 ```
 select * from pg_current_xact_id();
 
 ```
 
-## 31、看LightDB实例概要信息
+## 29、看LightDB实例概要信息
 
 <https://www.hs.net/lightdb/docs/html/functions-info.html>
 
 ```
 pg_control_checkpoint(), pg_control_init(), pg_control_system(), pg_control_recovery()
-
 ```
 
-## 32、复制管理功能
+## 30、复制管理功能
 
 <https://www.hs.net/lightdb/docs/html/functions-admin.html#FUNCTIONS-ADMIN-BACKUP>
 
-## 33、其他管理功能函数
+## 31、其他管理功能函数
 
 <https://www.hs.net/lightdb/docs/html/functions-admin.html>
 
-## 34、高可用归档清理
+## 32、高可用归档清理
 
 高可用归档清理通过配置`lightdb_archive_dir`（归档目录） 和`lightdb_archive_retention_size`（归档目录中Latest checkpoint's REDO WAL file 之前的文件保留数，建议配置为10以上，具体根据磁盘空间和主备间延迟配置，尽可能大）使用。
 
 如：Latest checkpoint's REDO WAL file 为000000010000000100000049，lightdb_archive_retention_size配为10,则清理小于 000000010000000100000039 的wal文件。
 
-## 35、日志清理
+## 33、日志清理
 
 日志清理通过配置`lightdb_log_retention_age`来清理，单位为分钟（可配置为3d，内部会转为分钟）。
 
 如：配置`lightdb_log_retention_age=7d`,则只保留7天的日志，在切换新文件时清理旧文件，根据文件的最新更新时间来清理。
 
-## 36、WAL文件缺失或被误删
+## 34、WAL文件缺失或被误删
 
 如果不小心删除了wal文件，可通过`pg_resetwal -f PGDATA`重新初始化wal文件，但是会丢失事务日志以及数据不一致，因为可能有full checkpoint之前的数据丢失，极端情况下某些数据块丢失。
 
@@ -970,7 +961,7 @@ Time of latest checkpoint:            Mon 04 Jul 2022 08:35:03 PM CST
 
 ```
 
-## 37、查看LightDB是否高可用、集群信息、主从节点
+## 35、查看LightDB是否高可用、集群信息、主从节点
 
 如果是单机版，则没有ltcluster库，可使用命令`ltsql ltcluster`尝试连接`ltcluster`库来确认，预期提示数据库不存在。单机版也不会有`$LTHOME/etc/ltcluster/ltcluster.conf`这个配置文件。
 
@@ -993,7 +984,7 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf cluster show
 
 也可以使用LightDB-EM查看是单机部署还是高可用部署。
 
-## 38、判断集群健康状态
+## 36、判断集群健康状态
 
 在主节点或从节点运行命令`ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf cluster show`展示的信息中没有`WARNING`；`Status`和`Upstream`字段没有出现`?`和`!`符号。
 
@@ -1022,7 +1013,7 @@ Configured data directory: OK (configured "data_directory" is "/data1/data5432")
 
 ```
 
-## 39、查看集群事件
+## 37、查看集群事件
 
 在排查集群问题，或监控集群事件时，除了查看$LTHOME/etc/ltcluster/ltcluster.log，ltcluster在events表中记录了更清晰有效的信息。
 
@@ -1056,7 +1047,7 @@ ltcluster=# select * from ltcluster.events ;
        1 | child_node_disconnect      | t          | 2021-11-21 22:35:49.769979+08 | standby node "node192" (ID: 2) has disconnected
 ```
 
-## 40、查看主从同步模式与延时
+## 38、查看主从同步模式与延时
 
 可在主节点执行`select * from pg_stat_replication`得到各个节点的实时同步状态信息。
 
@@ -1107,7 +1098,7 @@ ltcluster=# select * from ltcluster.monitoring_history order by last_monitor_tim
 
 也可以从LightDB-EM监控页面查看延时。
 
-## 41、集群复制级别
+## 39、集群复制级别
 
 不同的业务场景对数据库主备一致性有不同的要求。一致性越高对性能影响越大。用户可通过配置`synchronous_commit`来达到不同级别的一致性。
 
@@ -1136,7 +1127,7 @@ lt_ctl -D $LTDATA reload
 
 更详细的`synchronous_commit`及`synchronous_standby_names`请参考LightDB官方文档。
 
-## 42、主备切换
+## 40、主备切换
 
 在需要维护primary节点时，可做switchover，互换主从角色。switchover操作的内部执行比较复杂，非必要尽量不要执行。
 
@@ -1197,7 +1188,7 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
 2. 确认VIP是否切换到新的主机上(参考[3.11节](###3.11 如何查看VIP当前在哪个节点 ))
 3. 确认应用程序是否可以正常访问数据库
 
-## 43、故障恢复，主节点重新加入作为从节点
+## 41、故障恢复，主节点重新加入作为从节点
 
 当主库发生故障（如宕机）failover后，备库会自动提升为新主库，以确保集群继续可用。在原主库修复后， 可以以备机的方式加入集群，是的整个集群仍然保持高可用正常状态。
 
@@ -1230,7 +1221,7 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
 
    ```
 
-## 44、什么时候会rejoin失败、如何确定肯定无法rejoin了？无法rejoin的节点如何重新加入？
+## 42、什么时候会rejoin失败、如何确定肯定无法rejoin了？无法rejoin的节点如何重新加入？
 
 如果备机离线时间较久，必要的WAL日志在主上已经被移除，则rejoin会失败。此时需要使用standby clone操作来恢复集群，standby clone的原理是从主上把整个库拷贝过来， 在数据库较大的情况下耗时会比较久。
 
@@ -1285,7 +1276,7 @@ standby clone的步骤如下：
     ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf standby register -F
     ```
 
-## 44、什么是timeline，timeline什么时候变化？如何查看当前的timeline id？
+## 43、什么是timeline，timeline什么时候变化？如何查看当前的timeline id？
 
 timeline可以认为是数据库wal的分支（类比版本管理系统，比如svn）。
 
@@ -1309,11 +1300,11 @@ $ cat ./data/defaultcluster/lt_wal/00000004.history
 
 高可用命令`ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf cluster show`获取的timeline是当前最近做checkpoint的timeline，可能不是最新的timeline。
 
-## 45、当出现双主时如何处理
+## 44、当出现双主时如何处理
 
 如果出现双主，把老主停掉，重新加入集群作为standby。参考`node rejoin`章节，如果rejoin失败，老主通过`standby clone`重新加入集群。
 
-## 46、如何查看VIP当前在哪个节点
+## 45、如何查看VIP当前在哪个节点
 
 使用命令`ip a`可看到vip是否在当前节点，比如
 
@@ -1338,20 +1329,20 @@ $ cat $LTHOME/etc/keepalived/keepalived.conf
 
 ```
 
-## 47、如何触发VIP漂移
+## 46、如何触发VIP漂移
 
 在以下场景会触发VIP漂移:
 
 - 主库崩溃、意外停止，导致自动主从切换 (failover)
 - 手动进行主从切换 (switchover)
 
-## 48、为什么会出现VIP同时在两个节点？
+## 47、为什么会出现VIP同时在两个节点？
 
 如果主从之间网络出现问题，从节点可能误判主节点故障，把自己提升，这时会出现两个VIP。
 
 建议集群中加入witness节点，避免网络问题引起主从切换或从节点自动切主。
 
-## 49、重启主库
+## 48、重启主库
 
 主库因修改数据库参数或其他原因需要重启，可以按以下步骤操作。(**注意: 重启期间数据库不提供服务**)
 
@@ -1404,7 +1395,7 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service status
 
 1. **从库重新启动keepalived（需root用户）**，启动方法请参照本文档5.3。
 
-## 50、重启从库
+## 49、重启从库
 备库因修改数据库参数或其他原因需要重启，可以在`lightdb`用户下按以下步骤操作。
 
 ```
@@ -1439,13 +1430,13 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service status
 ```
 
-## 51、高可用归档清理与lt_probackup备份归档清理
+## 50、高可用归档清理与lt_probackup备份归档清理
 
 当同时使用高可用归档与lt_probackup备份归档时建议建立两个归档目录，归档两份，分别给高可用和备份使用，不然如果使用同一个，然后只开启备份的清理，有可能出现误删高可用所需的wal文件；只开启高可用的归档清理，可能导致误删备份所需的wal文件。
 
 高可用归档清理参见2.23一节。
 
-## 52、集群启停管理脚本
+## 51、集群启停管理脚本
 
 可以通过使用 `lightdb_service.py` 来进行集群的启停及简单的状态检测。脚本在 `$LTHOME/bin/` 下，依赖于uninstall目录下的uninstallFile.json 来获取集群信息。 此脚本在lightdb用户下执行，lightdb需要支持sudo免密。
 
@@ -1486,36 +1477,30 @@ optional arguments:
   -q, --quiet           suppress status messages for stdout logging
   -l <directory>, --log_dir <directory>
                         Logfile directory, default is /tmp/ltAdminLogs
-
-
 ```
 
 1. 启动集群
 
    ```
    python lightdb_service.py -c start
-
    ```
 
 2. 停止集群
 
    ```
    python lightdb_service.py -c stop
-
    ```
 
 3. 重启集群
 
    ```
    python lightdb_service.py -c restart
-
    ```
 
 4. 查看集群状态
 
    ```
    python lightdb_service.py -c status
-
    ```
 
 5. 只启停主
@@ -1524,35 +1509,30 @@ optional arguments:
 
    ```
    python lightdb_service.py -c start/stop/restart --primary_only
-
    ```
 
 6. 只启停备
 
    ```
    python lightdb_service.py -c start/stop/restart --standby_only
-
    ```
 
 7. 只启停CN节点
 
    ```
    python lightdb_service.py -c start/stop/restart --cn_only
-
    ```
 
 8. 只启停DN节点
 
    ```
    python lightdb_service.py -c start/stop/restart --dn_only
-
    ```
 
 9. 只启停某个节点
 
    ```
    python lightdb_service.py -c start/stop/restart -n 10.20.148.122:54333
-
    ```
 
 10. 强制停止
@@ -1561,7 +1541,6 @@ optional arguments:
 
     ```
     python lightdb_service.py -c stop -f
-
     ```
 
 11. 试运行
