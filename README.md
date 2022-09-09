@@ -1277,7 +1277,6 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
    ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf node rejoin \
        -d 'host=<primary_host> dbname=ltcluster user=ltcluster' \
        --verbose --force-rewind
-
    ```
 
 ## 42、什么时候会rejoin失败、如何确定肯定无法rejoin了？无法rejoin的节点如何重新加入？
