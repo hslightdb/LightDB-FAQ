@@ -99,6 +99,11 @@ ltsql: error while loading shared libraries: libreadline.so.8: canot open shared
 # cd lightdb-x-13.3-22.2-5950-kylinV10sp1.x86_64/system-lib
 # rpm -ivh readline-8.0.3.ky10.x86_64.rpm
 ```
+**LightDB是否有Windows版本客户端**  
+LightDB数据库中自带有Linux版客户端ltsql，如果想使用Windows版本对应的客户端，且不使用LightDB的匿名块功能时，可以使用PostgreSQL的psql客户端Windows版本，LightDB数据库的ltsql客户端针对PostgreSQL的psql客户端完全兼容，故可以直接通过PostgreSQL的psql连接操作LightDB数据库
+
+
+
 ## 4、LightDB更改列属性语法
 习惯于Oracle语法的同学，习惯用下面SQL执行更改列名和默认值等
 ```plsql
@@ -351,6 +356,8 @@ dbeaver下载地址：https://dbeaver.io/
 
 填写数据库IP、端口、用户名、密码等信息，测试连接登录即可  
 ![img_9.png](img_9.png)
+
+
 ## 8、如何实现LightDB访问Oracle表
 ### 1、安装插件
 LightDB默认集成了oracle_fdw插件
