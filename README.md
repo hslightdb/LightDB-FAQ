@@ -726,7 +726,6 @@ GUI安装界面弹不出来，一般来说有两种原因：
 如果无法满足上述条件，可以使用命令行安装模式，LightDB支持命令行安装模式，且与GUI安装相比仅在安装向导上有所差异，其余并无不同。
 
 ## 14、查看LightDB安装目录、实例目录、归档目录
-
 ```shell
 ls $LTHOME          # 查看安装目录
 ls $LTDATA          # 查看实例目录
@@ -1031,7 +1030,6 @@ Configured data directory: OK (configured "data_directory" is "/data1/data5432")
  2  | node193 | standby_register     | t  | 2021-11-22 21:06:55 | standby registration succeeded; upstream node ID is 1                                                    
  2  | node193 | standby_recovery     | t  | 2021-11-22 21:06:42 | reconnected to local node "node193" (ID: 2), marking active                          
  2  | node193 | standby_clone        | t  | 2021-11-22 21:05:44 | cloned from host "node199", port 5432; backup method: lt_basebackup; --force: N
-
 ```
 
 上述命令实际读取了ltcluster.events这张表，所以也可以通过SQL直接查询：
@@ -1050,8 +1048,6 @@ ltcluster=# select * from ltcluster.events ;
        2 | standby_register           | t          | 2021-11-21 22:31:49.270459+08 | standby registration succeeded; upstream node ID is 1
        1 | child_node_reconnect       | t          | 2021-11-21 22:31:55.155461+08 | standby node "node193" (ID: 2) has reconnected after 440552 seconds
        1 | child_node_disconnect      | t          | 2021-11-21 22:35:49.769979+08 | standby node "node192" (ID: 2) has disconnected
-
-
 ```
 
 ## 40、查看主从同步模式与延时
@@ -1081,7 +1077,6 @@ replay_lag       | 00:00:00.00093
 sync_priority    | 1
 sync_state       | sync
 reply_time       | 2022-05-06 17:28:27.523848+08
-
 ```
 
 如果是多备机的情况下，每个备机都有一条记录。 通过`write_lag`,`flush_lag`,`replay_lag`可以查看当前主从同步延迟信息。
@@ -1102,7 +1097,6 @@ ltcluster=# select * from ltcluster.monitoring_history order by last_monitor_tim
                1 |               2 | 2021-12-21 16:58:02.686736+08 | 2021-12-21 16:58:01.813462+08 | 0/6023B0A8                | 0/6023B0A8                |               0 |         0
                1 |               2 | 2021-12-21 16:58:04.712443+08 | 2021-12-21 16:58:04.117613+08 | 0/6023FA10                | 0/6023FA10                |               0 |         0
                1 |               2 | 2021-12-21 16:58:06.730236+08 | 2021-12-21 16:58:06.310637+08 | 0/60242C48                | 0/60242C48                |               0 |         0
-
 ```
 
 也可以从LightDB-EM监控页面查看延时。
@@ -1122,7 +1116,6 @@ synchronous_standby_names = ''
 
 # 修改后，主节点调用reload生效
 lt_ctl -D $LTDATA reload
-
 ```
 
 下表概括了 `synchronous_commit` 不同设置对应不同的一致性级别：
@@ -1166,7 +1159,6 @@ lt_ctl -D $LTDATA reload
 
 ```
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf standby switchover --siblings-follow --dry-run
-
 ```
 
 如果最后一行信息为：prererequisites for executing STANDBY SWITCHOVER are met，则表示成功
@@ -1176,14 +1168,11 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf standby switchover --siblings-
 ```
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf standby switchover \
 	--log-level=DEBUG --verbose --siblings-follow
-
 ```
-
 1. 在各节点上查看集群状态，确认各节点执行结果中primary和standby角色确实已互换
 
 ```
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service status
-
 ```
 
 输出要确保没有警告和错误信息
@@ -1196,7 +1185,6 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service status
 
 ```
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
-
 ```
 
 1. 如果使用同步模式，则需要把新主改成同步模式(和旧主一样)，新备改成local模式(参考[3.5节](###3.5 集群复制级别))
@@ -1223,7 +1211,6 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
    ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf node rejoin \
        -d 'host=<primary_host> dbname=ltcluster user=ltcluster' \
        --verbose --force-rewind --dry-run
-
    ```
 
    确认输出有`INFO: prerequisites for executing NODE JOIN are met` 并且无警告或者错误信息。
@@ -1249,9 +1236,7 @@ standby clone的步骤如下：
 
    ```
    ps aux | grep ltcluster
-   ltclusterd -d -f $LTHOME/etc/ltcluster/ltcluster.conf \
-       -p $LTHOME/etc/ltcluster/ltclusterd.pid
-
+   ltclusterd -d -f $LTHOME/etc/ltcluster/ltcluster.conf -p $LTHOME/etc/ltcluster/ltclusterd.pid
    ```
 
 3. 清空备库实例目录($LTDATA)下的内容（若有需要，清空前可先备份）
@@ -1292,7 +1277,6 @@ standby clone的步骤如下：
 
     ```
     ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf standby register -F
-
     ```
 
 ## 44、什么是timeline，timeline什么时候变化？如何查看当前的timeline id？
@@ -1330,7 +1314,6 @@ $ cat ./data/defaultcluster/lt_wal/00000004.history
 ```
 $ ip a | grep 251
     inet 10.19.36.251/32 scope global enp2s0f0
-
 ```
 
 如果grep没有匹配行，则vip不在当前节点。
@@ -1377,7 +1360,6 @@ kill keepalived_pid
 
 # 3. 确认keepalived进程确实已不存在
 ps aux | grep keepalived
-
 ```
 
 1. 主库重启，需要在`lightdb`用户下执行
@@ -1412,13 +1394,11 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
 
 # 9. 查看集群状态，确认primary的Paused?状态为no
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service status
-
 ```
 
 1. **从库重新启动keepalived（需root用户）**，启动方法请参照本文档5.3。
 
 ## 50、重启从库
-
 备库因修改数据库参数或其他原因需要重启，可以在`lightdb`用户下按以下步骤操作。
 
 ```
@@ -1451,7 +1431,6 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service unpause
 
 # 9. 确认standby的Paused?字段为no
 ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service status
-
 ```
 
 ## 51、高可用归档清理与lt_probackup备份归档清理
