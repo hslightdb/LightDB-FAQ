@@ -942,9 +942,13 @@ show autovacuum_naptime;  -- 查看autovacuum频率
 先使用`lt_controldata`获得`Latest checkpoint's REDO WAL file`，如下所示。
 
 ```
-lt_controldata $LTDATA | grep "Latest checkpoint's REDO WAL file:"
+$ lt_controldata $LTDATA | grep "Latest checkpoint's REDO WAL file"
+Latest checkpoint's REDO WAL file:    000000010000000000000006
 ```
-![img_13.png](img_13.png)
+然后通过下面的语句清理归档
+```
+lt_archivecleanup $LTHOME/archive `lt_controldata $LTDATA | grep "Latest checkpoint's REDO WAL file" | awk '{print $6}'`
+```
 
 `Latest checkpoint's REDO WAL file`之前的WAL文件（包括已归档和未归档）都可以删除.
 
@@ -952,7 +956,7 @@ lt_controldata $LTDATA | grep "Latest checkpoint's REDO WAL file:"
 lt_archivecleanup -d $LTDATA/lt_wal last_checkpoint_redo_wal_file   # 删除未归档的WAL文件
 lt_archivecleanup -d $LTHOME/archive last_checkpoint_redo_wal_file  # 删除已归档的WAL文件
 ```
-![img_14.png](img_14.png)
+
 ## 27、查看LightDB启动时间
 
 ```
