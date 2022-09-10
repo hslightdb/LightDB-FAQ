@@ -1305,7 +1305,6 @@ standby clone的步骤如下：
    ```
    ltcluster -h new_primary_host -U ltcluster -d ltcluster \
        -f $LTHOME/etc/ltcluster/ltcluster.conf standby clone --dry-run
-
    ```
 
 6. 确认试运行结果显示all prerequisites for "standby clone" are met
@@ -1318,7 +1317,6 @@ standby clone的步骤如下：
          standby clone -F \
          --log-level=DEBUG --verbose \
          >standby_clone.log  2>&1 &
-
    ```
 
 8. 把主库的归档目录下的所有文件复制到备库的归档目录中(`$LTHOME/archive`)
@@ -1327,7 +1325,6 @@ standby clone的步骤如下：
 
    ```
    lt_ctl -D $LTDATA start
-
    ```
 
 10. 重新注册为standby
@@ -1386,7 +1383,6 @@ $ cat $LTHOME/etc/keepalived/keepalived.conf
         10.19.36.251
     }
 ...
-
 ```
 
 ## 46、如何触发VIP漂移
