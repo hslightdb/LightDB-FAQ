@@ -1019,7 +1019,6 @@ Latest checkpoint's oldestMulti's DB: 1
 Latest checkpoint's oldestCommitTsXid:0
 Latest checkpoint's newestCommitTsXid:0
 Time of latest checkpoint:            Mon 04 Jul 2022 08:35:03 PM CST
-
 ```
 
 ## 35、查看LightDB是否高可用、集群信息、主从节点
@@ -1052,7 +1051,6 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf cluster show
    ----+---------+---------+-----------+---------+----------+----------+----------+--------------------------------
     1  | node199 | primary | * running |         | default  | 100      | 1        | 
     2  | node193 | standby |   running | node199 | default  | 100      | 1        | 
-
 ```
 
 在各个节点运行命令`ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf node check`展示的各个检查项的均为`OK`。
