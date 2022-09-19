@@ -1,4 +1,4 @@
-# LightDB（22.1 & 22.2版本） FAQ
+# LightDB（22.1 & 22.2 & 22.3版本） FAQ
 
 - [1、如何选择LightDB安装包](https://github.com/hslightdb/LightDB-FAQ#1%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9lightdb%E5%AE%89%E8%A3%85%E5%8C%85)  
 - [2、LightDB如何进行逻辑备份、恢复](https://github.com/hslightdb/LightDB-FAQ#2lightdb%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%80%BB%E8%BE%91%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D)  
@@ -139,7 +139,8 @@ ltsql: error while loading shared libraries: libreadline.so.8: canot open shared
 LightDB数据库中自带有Linux版客户端ltsql，如果想使用Windows版本对应的客户端，且不使用LightDB的匿名块功能时，可以使用PostgreSQL的psql客户端Windows版本，LightDB数据库的ltsql客户端针对PostgreSQL的psql客户端完全兼容，故可以直接通过PostgreSQL的psql连接操作LightDB数据库
 
 ## 4、LightDB更改列属性语法
-习惯于Oracle语法的同学，习惯用下面SQL执行更改列名和默认值等
+**从LightDB 22.3开始modify column语法完全兼容Oracle**    
+在LightDB22.2之前，习惯于Oracle语法的同学，习惯用下面SQL执行更改列名和默认值等
 ```plsql
 SQL> desc emp;
  Name                                      Null?    Type
