@@ -52,6 +52,10 @@
 - [50、高可用归档清理与lt_probackup备份归档清理](https://github.com/hslightdb/LightDB-FAQ#50%E9%AB%98%E5%8F%AF%E7%94%A8%E5%BD%92%E6%A1%A3%E6%B8%85%E7%90%86%E4%B8%8Elt_probackup%E5%A4%87%E4%BB%BD%E5%BD%92%E6%A1%A3%E6%B8%85%E7%90%86)
 - [51、集群启停管理脚本](https://github.com/hslightdb/LightDB-FAQ#51%E9%9B%86%E7%BE%A4%E5%90%AF%E5%81%9C%E7%AE%A1%E7%90%86%E8%84%9A%E6%9C%AC)
 
+- [52、修改有视图依赖的表字段属性](#52修改有视图依赖的表字段属性)
+
+- [53、create or replace view 修改视图无法增加字段](#53create-or-replace-view-修改视图无法增加字段)
+
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
@@ -1605,3 +1609,27 @@ optional arguments:
 ```
 python lightdb_service.py -c xxx --dry-run 
 ```
+
+## 52、修改有视图依赖的表字段属性
+
+目前在lightdb中不能通过 alter table 语句直接修改有视图依赖的表字段的某些属性（比如字段类型 int -> number）。
+可以采用如下方式修改：
+
+```
+begin;
+select deps_save_and_drop_dependencies('public', 'test');
+alter table test modify key1 number;
+select deps_restore_dependencies('public', 'test');
+commit;
+```
+
+原理调用deps_save_and_drop_dependencies删除依赖的视图并保存创建语句到lt_catalog.deps_saved_ddl表， 然后在alter table后调用deps_restore_dependencies获取创建语句重新创建视图。
+
+### note
+
+调用函数设置的schema_name和table_name需要与实际相符，一般为小写（因为lightdb内部会都转为小写），对于`craete table "Test"(key1 int);`这种需传入Test.
+
+
+## 53、create or replace view 修改视图无法增加字段
+
+目前需要替换为先使用drop view if exist， 然后在执行create。
