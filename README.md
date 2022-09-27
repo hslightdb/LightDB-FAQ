@@ -1602,6 +1602,6 @@ optional arguments:
 
 11. 试运行
 
-```
-python lightdb_service.py -c xxx --dry-run 
-```
+   ```
+   python lightdb_service.py -c xxx --dry-run 
+   ```
