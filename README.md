@@ -1604,9 +1604,9 @@ optional arguments:
 
 11. 试运行
 
-```
-python lightdb_service.py -c xxx --dry-run 
-```
+   ```
+   python lightdb_service.py -c xxx --dry-run 
+   ```
 
 ## 52、修改有视图依赖的表字段属性
 
@@ -1633,7 +1633,7 @@ commit;
 目前需要替换为先使用drop view if exist， 然后在执行create。
 
 ## 54、LightDB适配MySQL需要注意点
-1. 列别名：MySQL 中支持 select a 'authorized' from my_table;  列别名由单引号换做使用双引号或as： select a as authorized from b
+1. 列别名：MySQL 中支持 select a 'authorized' from test;  LightDB中需要使用如下语句，列别名由单引号换做使用双引号或 as： select a as authorized from test
 2. 表删除：MySQL 中支持 delete my_table from my_table where ...; delete后不支持接表名：delete from my_table where ...
 3. 双竖线：MySQL 中支持 where (a is NULL || a = 0)双竖线做逻辑操作符，lightdb中双竖线为字符串拼接，双竖线可以换为or
 4. DUPLICATE语法：可以使用ON conflict进行替换：INSERT INTO tb_rpa_resource_index(instance_id, user_id, resource_id, resource_type, resource_idx) VALUES ('m', 'm', 'm', 1, 1) ON conflict(instance_id) DO UPDATE SET user_id = EXCLUDED.user_id, resource_id = EXCLUDED.resource_id, resource_type = EXCLUDED.resource_type, resource_idx = EXCLUDED.resource_idx
