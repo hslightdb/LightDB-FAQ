@@ -1608,9 +1608,9 @@ optional arguments:
    ```
    
 ## 52、当前版本不支持MySQL的特性有哪些
-1. 列别名：mysql中支持 select a 'authorized' from my_table;  列别名由单引号换做使用双引号或as： select a as authorized from b
-2. 表删除：mysql中支持 delete my_table from my_table where ...; delete后不支持接表名：delete from my_table where ...
-3. 双竖线：mysql中支持 where (a is NULL || a = 0)双竖线做逻辑操作符，lightdb中双竖线为字符串拼接，双竖线可以换为or
+1. 列别名：MySQL 中支持 select a 'authorized' from test;  列别名由单引号换做使用双引号或as： select a as authorized from test
+2. 表删除：MySQL 中支持 delete my_table from my_table where ...; delete后不支持接表名：delete from my_table where ...
+3. 双竖线：MySQL l中支持 where (a is NULL || a = 0)双竖线做逻辑操作符，lightdb中双竖线为字符串拼接，双竖线可以换为or
 4. DUPLICATE语法：可以使用ON conflict进行替换：INSERT INTO tb_rpa_resource_index(instance_id, user_id, resource_id, resource_type, resource_idx) VALUES ('m', 'm', 'm', 1, 1) ON conflict(instance_id) DO UPDATE SET user_id = EXCLUDED.user_id, resource_id = EXCLUDED.resource_id, resource_type = EXCLUDED.resource_type, resource_idx = EXCLUDED.resource_idx
 5. replace into语法：可以使用ON conflict进行替换：INSERT INTO tb_see_sync(data_id,type,node_id,update_datetime,status,code,msg,version) VALUES ('m', 'm', 'm', now(),'m','m','m',1) ON conflict(data_id) DO UPDATE SET type = EXCLUDED.type, node_id = EXCLUDED.node_id, update_datetime = EXCLUDED.update_datetime, update_datetime = EXCLUDED.update_datetime, status = EXCLUDED.status, code = EXCLUDED.code, msg = EXCLUDED.msg, version = EXCLUDED.version 
 6. 多表关联删除：可以使用with子句：with x as (delete from tb_cdm_relation_class a using tb_cdm_relation_class b where a.class_id = b.parent_class_id and a.source_class_id in ('1') returning a.*) delete from tb_cdm_relation_class c using x where c.parent_class_id = x.class_id;
@@ -1618,3 +1618,4 @@ optional arguments:
 8. mysql转lightdb的sql分模块导出导入：ltdump -t tablename1 -t tablename2
 9. interval $1 mouth支持：可以使用make_interval(mouths=>$1)代替
 10. mysql中datetime转到lightdb中的timestamp类型，不管插入数据如何只精确到秒级：lightdb中timestamp换为timestamp(0)
+
