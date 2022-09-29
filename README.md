@@ -1640,6 +1640,6 @@ commit;
 5. replace into语法：可以使用ON conflict进行替换：INSERT INTO tb_see_sync(data_id,type,node_id,update_datetime,status,code,msg,version) VALUES ('m', 'm', 'm', now(),'m','m','m',1) ON conflict(data_id) DO UPDATE SET type = EXCLUDED.type, node_id = EXCLUDED.node_id, update_datetime = EXCLUDED.update_datetime, update_datetime = EXCLUDED.update_datetime, status = EXCLUDED.status, code = EXCLUDED.code, msg = EXCLUDED.msg, version = EXCLUDED.version 
 6. 多表关联删除：可以使用with子句：with x as (delete from tb_cdm_relation_class a using tb_cdm_relation_class b where a.class_id = b.parent_class_id and a.source_class_id in ('1') returning a.*) delete from tb_cdm_relation_class c using x where c.parent_class_id = x.class_id;
 7. 多表关联更新：可以使用：update tb_rolepower a set a.power_id = b.id from tb_menu b where b.sn = a.power_id;
-8. mysql转lightdb的sql分模块导出导入：ltdump -t tablename1 -t tablename2
+8. MySQL转Lightdb的sql分模块导出导入：ltdump -t tablename1 -t tablename2
 9. interval $1 mouth支持：可以使用make_interval(mouths=>$1)代替
-10. mysql中datetime转到lightdb中的timestamp类型，不管插入数据如何只精确到秒级：lightdb中timestamp换为timestamp(0)
+10. MySQL中datetime转到lightdb中的timestamp类型，不管插入数据如何只精确到秒级：lightdb中timestamp换为timestamp(0)
