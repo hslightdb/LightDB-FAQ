@@ -1624,9 +1624,7 @@ commit;
 原理调用deps_save_and_drop_dependencies删除依赖的视图并保存创建语句到lt_catalog.deps_saved_ddl表， 然后在alter table后调用deps_restore_dependencies获取创建语句重新创建视图。
 
 ### note
-
 调用函数设置的schema_name和table_name需要与实际相符，一般为小写（因为lightdb内部会都转为小写），对于`craete table "Test"(key1 int);`这种需传入Test.
-
 
 ## 53、create or replace view 修改视图无法增加字段
 
