@@ -51,7 +51,10 @@
 - [49、高可用环境如何重启从库？](https://github.com/hslightdb/LightDB-FAQ#49%E9%AB%98%E5%8F%AF%E7%94%A8%E7%8E%AF%E5%A2%83%E5%A6%82%E4%BD%95%E9%87%8D%E5%90%AF%E4%BB%8E%E5%BA%93)
 - [50、高可用归档清理与lt_probackup备份归档清理](https://github.com/hslightdb/LightDB-FAQ#50%E9%AB%98%E5%8F%AF%E7%94%A8%E5%BD%92%E6%A1%A3%E6%B8%85%E7%90%86%E4%B8%8Elt_probackup%E5%A4%87%E4%BB%BD%E5%BD%92%E6%A1%A3%E6%B8%85%E7%90%86)
 - [51、集群启停管理脚本](https://github.com/hslightdb/LightDB-FAQ#51%E9%9B%86%E7%BE%A4%E5%90%AF%E5%81%9C%E7%AE%A1%E7%90%86%E8%84%9A%E6%9C%AC)
-- [52、当前版本不支持MySQL的特性有哪些](https://github.com/hslightdb/LightDB-FAQ#51%E9%9B%86%E7%BE%A4%E5%90%AF%E5%81%9C%E7%AE%A1%E7%90%86%E8%84%9A%E6%9C%AC)
+
+- [52、修改有视图依赖的表字段属性](#52修改有视图依赖的表字段属性)
+
+- [53、create or replace view 修改视图无法增加字段](#53create-or-replace-view-修改视图无法增加字段)
 
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
@@ -1603,19 +1606,30 @@ optional arguments:
 
 11. 试运行
 
-   ```
-   python lightdb_service.py -c xxx --dry-run 
-   ```
-   
-## 52、当前版本不支持MySQL的特性有哪些
-1. 列别名：MySQL 中支持 select a 'authorized' from test;  LightDB中使用如下语句，列别名由单引号换做使用双引号或as： select a as authorized from test
-2. 表删除：MySQL 中支持 delete my_table from my_table where ...; delete后不支持接表名：delete from my_table where ...
-3. 双竖线：MySQL l中支持 where (a is NULL || a = 0)双竖线做逻辑操作符，lightdb中双竖线为字符串拼接，双竖线可以换为or
-4. DUPLICATE语法：可以使用ON conflict进行替换：INSERT INTO tb_rpa_resource_index(instance_id, user_id, resource_id, resource_type, resource_idx) VALUES ('m', 'm', 'm', 1, 1) ON conflict(instance_id) DO UPDATE SET user_id = EXCLUDED.user_id, resource_id = EXCLUDED.resource_id, resource_type = EXCLUDED.resource_type, resource_idx = EXCLUDED.resource_idx
-5. replace into语法：可以使用ON conflict进行替换：INSERT INTO tb_see_sync(data_id,type,node_id,update_datetime,status,code,msg,version) VALUES ('m', 'm', 'm', now(),'m','m','m',1) ON conflict(data_id) DO UPDATE SET type = EXCLUDED.type, node_id = EXCLUDED.node_id, update_datetime = EXCLUDED.update_datetime, update_datetime = EXCLUDED.update_datetime, status = EXCLUDED.status, code = EXCLUDED.code, msg = EXCLUDED.msg, version = EXCLUDED.version 
-6. 多表关联删除：可以使用with子句：with x as (delete from tb_cdm_relation_class a using tb_cdm_relation_class b where a.class_id = b.parent_class_id and a.source_class_id in ('1') returning a.*) delete from tb_cdm_relation_class c using x where c.parent_class_id = x.class_id;
-7. 多表关联更新：可以使用：update tb_rolepower a set a.power_id = b.id from tb_menu b where b.sn = a.power_id;
-8. mysql转lightdb的sql分模块导出导入：ltdump -t tablename1 -t tablename2
-9. interval $1 mouth支持：可以使用make_interval(mouths=>$1)代替
-10. mysql中datetime转到lightdb中的timestamp类型，不管插入数据如何只精确到秒级：lightdb中timestamp换为timestamp(0)
+```
+python lightdb_service.py -c xxx --dry-run 
+```
 
+## 52、修改有视图依赖的表字段属性
+
+目前在lightdb中不能通过 alter table 语句直接修改有视图依赖的表字段的某些属性（比如字段类型 int -> number）。
+可以采用如下方式修改：
+
+```
+begin;
+select deps_save_and_drop_dependencies('public', 'test');
+alter table test modify key1 number;
+select deps_restore_dependencies('public', 'test');
+commit;
+```
+
+原理调用deps_save_and_drop_dependencies删除依赖的视图并保存创建语句到lt_catalog.deps_saved_ddl表， 然后在alter table后调用deps_restore_dependencies获取创建语句重新创建视图。
+
+### note
+
+调用函数设置的schema_name和table_name需要与实际相符，一般为小写（因为lightdb内部会都转为小写），对于`craete table "Test"(key1 int);`这种需传入Test.
+
+
+## 53、create or replace view 修改视图无法增加字段
+
+目前需要替换为先使用drop view if exist， 然后在执行create。
