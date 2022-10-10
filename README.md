@@ -1627,7 +1627,6 @@ commit;
 调用函数设置的schema_name和table_name需要与实际相符，一般为小写（因为lightdb内部会都转为小写），对于`craete table "Test"(key1 int);`这种需传入Test.
 
 ## 53、create or replace view 修改视图无法增加字段
-
 目前需要替换为先使用drop view if exist， 然后在执行create。
 
 ## 54、LightDB适配MySQL需要注意点
