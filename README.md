@@ -1658,7 +1658,7 @@ public class testCallPgProcedure {
         try {
             Class.forName("org.postgresql.Driver").newInstance();
 //            String url = "jdbc:postgresql://10.20.30.111:5435/database_name?currentSchema=schema_name";// 数据库名
-            String url = "jdbc:postgresql://10.19.69.255:5555/em";// 数据库名
+            String url = "jdbc:postgresql://10.20.30.111:5435/database_name";// 数据库名
             Properties props = new Properties();
             // :TODO 支持调用存储过程，设置这个数据库配置项 escapeSyntaxCallMode
             //  ensure EscapeSyntaxCallmode property set to support procedures if no return value
