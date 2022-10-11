@@ -54,6 +54,7 @@
 - [52、修改有视图依赖的表字段属性](#52修改有视图依赖的表字段属性)
 - [53、create or replace view 修改视图无法增加字段](#53create-or-replace-view-修改视图无法增加字段)
 - [54、LightDB适配MySQL需要注意点](#53create-or-replace-view-修改视图无法增加字段)
+- [55、如何通过java jdbc调用LightDBDB存储过程]()
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
@@ -1640,3 +1641,51 @@ commit;
 8. MySQL转Lightdb的sql分模块导出导入：ltdump -t tablename1 -t tablename2
 9. interval $1 months支持：可以使用make_interval(months=>$1)代替
 10. MySQL中datetime转到lightdb中的timestamp类型，不管插入数据如何只精确到秒级：lightdb中timestamp换为timestamp(0)
+
+## 55、如何通过java jdbc调用LightDBDB存储过程
+https://jdbc.postgresql.org/documentation/callproc/
+```shell
+package com.hundsun.lightdb.callProcedure;
+
+import org.junit.Test;
+
+import java.sql.*;
+import java.util.Properties;
+
+public class testCallPgProcedure {
+    @Test
+    public void testCallProcedure() {
+        try {
+            Class.forName("org.postgresql.Driver").newInstance();
+//            String url = "jdbc:postgresql://10.20.147.230:5435/pubinfo?currentSchema=pubinfo";// 数据库名
+            String url = "jdbc:postgresql://10.19.69.255:5555/em";// 数据库名
+            Properties props = new Properties();
+            // :TODO 支持调用存储过程，设置这个数据库配置项 escapeSyntaxCallMode
+            //  ensure EscapeSyntaxCallmode property set to support procedures if no return value
+            props.setProperty("escapeSyntaxCallMode", "callIfNoReturn");
+            props.setProperty("user", "lightdb");
+            props.setProperty("password", "lightdb123");
+            Connection conn = DriverManager.getConnection(url, props);
+
+            CallableStatement proc = conn.prepareCall("{call sp_jy_var_stk_susp( ? ,?)}");
+            proc.setString(1, "第一个参数");
+            proc.registerOutParameter(1,Types.VARCHAR);
+            proc.registerOutParameter(2,Types.VARCHAR);
+            proc.setString(2," ");
+            proc.execute();
+            String string = proc.getString(1);
+            String string1 = proc.getString(2);
+            System.out.println("string = " + string);
+            proc.close();
+            conn.close();
+        } catch (SQLException sqe) {
+            System.out.println("Unexpected exception : " + sqe.toString()
+                    + ", sqlstate = " + sqe.getSQLState());
+            System.exit(1);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+    }
+
+}
+```
