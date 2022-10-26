@@ -1723,7 +1723,7 @@ JDBC中示例如下
 ```javascript
 @Test
   public void currentSchema() throws SQLException {
-    connection = DriverManager.getConnection("jdbc:postgresql://10.20.30.11:5432/fund60?currentSchema=\"$user\",oracle", "username", "pasword");
+    connection = DriverManager.getConnection("jdbc:postgresql://10.20.30.11:5432/fund60?currentSchema=\"$user\",oracle", "username", "password");
     preparedStatement =  connection.prepareStatement("show search_path");
     resultSet = preparedStatement.executeQuery();
     while (resultSet.next()){
