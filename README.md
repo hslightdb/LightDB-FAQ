@@ -1692,7 +1692,7 @@ public class testCallPgProcedure {
 }
 ```
 ## LightDB22.3版本Oracle模式下，如何设置search_path？
-首先确认下您的数据库为什么模式，执行下面语句，可以看到结果为Oracle，那么此环境为Oracle模式数据库
+首先确认下您的数据库是什么模式，执行下面语句，可以看到结果为Oracle，那么此环境为Oracle模式数据库
 ```shell
 lightdb@lt_test=# show lightdb_syntax_compatible_type ;
  lightdb_syntax_compatible_type 
@@ -1700,7 +1700,7 @@ lightdb@lt_test=# show lightdb_syntax_compatible_type ;
  Oracle
 (1 row)
 ```
-如果通过ltsql登录数据库，默认search_path如下
+如果通过ltsql、dbeaver等客户端工具登录数据库，默认情况search_path如下
 ```shell
 lightdb@lt_test=# show search_path ;
          search_path         
@@ -1708,7 +1708,7 @@ lightdb@lt_test=# show search_path ;
  "$user", public, lt_catalog
 (1 row)
 ```
-需要会话级别设置search_path，方能使用Oracle兼容等函数、数据类型等特性
+需要在ltsql、dbeaver会话级别设置search_path，方能使用Oracle兼容等函数、数据类型等特性
 ```
 lightdb@lt_test=# set search_path =  "$user", oracle, public，lt_catalog;
 或者
