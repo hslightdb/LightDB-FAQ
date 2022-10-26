@@ -55,6 +55,8 @@
 - [53、create or replace view 修改视图无法增加字段](#53create-or-replace-view-修改视图无法增加字段)
 - [54、LightDB适配MySQL需要注意点](#53create-or-replace-view-修改视图无法增加字段)
 - [55、如何通过java jdbc调用LightDB存储过程](https://github.com/hslightdb/LightDB-FAQ#55%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87java-jdbc%E8%B0%83%E7%94%A8lightdb%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B)
+- [56、LightDB22.3版本Oracle模式下，如何设置search_path？]()
+
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
 
@@ -1689,3 +1691,45 @@ public class testCallPgProcedure {
 
 }
 ```
+## LightDB22.3版本Oracle模式下，如何设置search_path？
+首先确认下您的数据库为什么模式，执行下面语句，可以看到结果为Oracle，那么此环境为Oracle模式数据库
+```shell
+lightdb@lt_test=# show lightdb_syntax_compatible_type ;
+ lightdb_syntax_compatible_type 
+--------------------------------
+ Oracle
+(1 row)
+```
+如果通过ltsql登录数据库，默认search_path如下
+```shell
+lightdb@lt_test=# show search_path ;
+         search_path         
+-----------------------------
+ "$user", public, lt_catalog
+(1 row)
+```
+需要会话级别设置search_path，方能使用Oracle兼容等函数、数据类型等特性
+```
+lightdb@lt_test=# set search_path =  "$user", oracle, public，lt_catalog;
+或者
+lightdb@lt_test=# set search_path =  "$user", public, oracle, lt_catalog;
+lightdb@lt_test=# show search_path ;
+             search_path             
+-------------------------------------
+ "$user", public, oracle, lt_catalog
+(1 row)
+```
+JDBC中示例如下
+```javascript
+@Test
+  public void currentSchema() throws SQLException {
+    connection = DriverManager.getConnection("jdbc:postgresql://10.20.30.11:5432/fund60?currentSchema=\"$user\",oracle", "username", "pasword");
+    preparedStatement =  connection.prepareStatement("show search_path");
+    resultSet = preparedStatement.executeQuery();
+    while (resultSet.next()){
+      String searchPath = resultSet.getString(1);
+      System.out.println(searchPath);
+    }
+  }
+```
+同理，如果您的数据库为MySQL模式，将上面的oracle替换为mysql即可。
