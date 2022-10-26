@@ -55,7 +55,7 @@
 - [53、create or replace view 修改视图无法增加字段](#53create-or-replace-view-修改视图无法增加字段)
 - [54、LightDB适配MySQL需要注意点](#53create-or-replace-view-修改视图无法增加字段)
 - [55、如何通过java jdbc调用LightDB存储过程](https://github.com/hslightdb/LightDB-FAQ#55%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87java-jdbc%E8%B0%83%E7%94%A8lightdb%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B)
-- [56、LightDB22.3版本Oracle模式下，如何设置search_path？]()
+- [56、LightDB22.3版本Oracle模式下，如何设置search_path？](https://github.com/hslightdb/LightDB-FAQ#lightdb223%E7%89%88%E6%9C%ACoracle%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AEsearch_path)
 
 ## 1、如何选择LightDB安装包
 下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
