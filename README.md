@@ -1719,11 +1719,25 @@ lightdb@lt_test=# show search_path ;
  "$user", public, oracle, lt_catalog
 (1 row)
 ```
-JDBC中示例如下
+JDBC中示例如下两种方式currentSchema和options  
+### currentSchema方式
 ```javascript
 @Test
   public void currentSchema() throws SQLException {
-    connection = DriverManager.getConnection("jdbc:postgresql://10.20.30.11:5432/fund60?currentSchema=\"$user\",oracle", "username", "password");
+    connection = DriverManager.getConnection("jdbc:postgresql://10.20.30.11:5432/fund60?currentSchema=\"$user\", oracle", "username", "password");
+    preparedStatement =  connection.prepareStatement("show search_path");
+    resultSet = preparedStatement.executeQuery();
+    while (resultSet.next()){
+      String searchPath = resultSet.getString(1);
+      System.out.println(searchPath);
+    }
+  }
+```
+### options方式
+```javascript
+@Test
+  public void currentSchema() throws SQLException {
+    connection = DriverManager.getConnection("jdbc:postgresql://10.20.30.11:5432/fund60?options=-c%20currentSchema=$user,public,oracle,lt_catalog%20", "username", "password");
     preparedStatement =  connection.prepareStatement("show search_path");
     resultSet = preparedStatement.executeQuery();
     while (resultSet.next()){
