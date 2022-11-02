@@ -1746,8 +1746,8 @@ JDBC中示例如下两种方式currentSchema和options
     }
   }
 ```
-同理，如果您的数据库为MySQL模式，将上面的oracle替换为mysql即可。
-## jdbc中设置当前schema和search_path的方式。
+同理，如果您的数据库为MySQL模式，将上面的oracle替换为mysql即可。  
+说明：jdbc中设置当前schema和search_path的方式。
 LightDB中当前schema由search_path决定,因此设置当前schema和设置search_path方法是一样了。jdbc提供以下两种方式。
 + 方式1. options参数。jdbc连接参数中，可以在options中指名guc参数，格式如下：options=-c guc参数名=参数值,其中options后面的值需要encode。如设置语句超时时间的连接字符串如下：
 ```
