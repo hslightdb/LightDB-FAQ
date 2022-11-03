@@ -1720,7 +1720,7 @@ lightdb@lt_test=# show search_path ;
 (1 row)
 ```
 LightDB中当前schema由search_path决定,因此设置当前schema和设置search_path方法是一样了。jdbc提供以下两种方式。
-### options方式
+### options方式(推荐此方式)！！！
 jdbc连接参数中，可以在options中指名guc参数，格式如下：options=-c guc参数名=参数值,其中options后面的值需要encode。如设置语句超时时间的连接字符串如下：
 ```javascript
 jdbc:postgresql://localhost:5432/lt_test?options=-c%20statement_timeout=90000
@@ -1746,7 +1746,7 @@ jdbc:postgresql://localhost:5432/lt_test?currentSchema=\"$user\", oracle
     }
   }
 ```
-此时，jdbc会自动补充public到search_path中。实际search_path是\"$user\", oracle，public。文档地址：https://jdbc.postgresql.org/documentation/use/#connection-parameters
+此时，jdbc会自动补充public到search_path中。实际search_path是\"$user\", oracle, public, lt_catalog 。文档地址：https://jdbc.postgresql.org/documentation/use/#connection-parameters
 
 同理，如果您的数据库为MySQL模式，将上面的oracle替换为mysql即可。  
  
