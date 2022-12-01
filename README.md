@@ -1502,7 +1502,7 @@ ltcluster -f $LTHOME/etc/ltcluster/ltcluster.conf service status
 
 可以通过使用 `lightdb_service.py` 来进行集群的启停及简单的状态检测。脚本在 `$LTHOME/bin/` 下，依赖于uninstall目录下的uninstallFile.json 来获取集群信息。 此脚本在lightdb用户下执行，lightdb需要支持sudo免密。
 
-python 版本需为 python2.7。使用方式如下：
+python 版本需为 python3。使用方式如下：
 
 ```
 usage: lightdb_service.py [-h] [-F <install_info>]
