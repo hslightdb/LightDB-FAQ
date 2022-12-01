@@ -380,7 +380,7 @@ test=# show tcp_keepalives%;
 
 
 ## 7、如何配置LightDB集成开发环境
-Oracle一般习惯使用PL/SQL developer做为集成开发环境，同样LightDB为了使用自己的存储过程特性等特性，推荐使用dbeaver集成环境并且需要配置LightDB驱动。  
+Oracle一般习惯使用PL/SQL developer做为集成开发环境，同样LightDB为了使用自己的存储过程等特性，推荐使用dbeaver集成环境并且需要配置LightDB驱动。  
 LightDB驱动下载地址：https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc    
 dbeaver下载地址：https://dbeaver.io/ 
 下载成功安装后，找到数据库->驱动管理器->新建  
