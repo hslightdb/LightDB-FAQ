@@ -58,7 +58,7 @@
 - [56、LightDB22.3版本Oracle模式下，如何设置search_path？](https://github.com/hslightdb/LightDB-FAQ#lightdb223%E7%89%88%E6%9C%ACoracle%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AEsearch_path)
 
 ## 1、如何选择LightDB安装包
-下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
+下载地址：http://www.light-pg.com/downloadCate.html ，注册账号登录后选择对应的下载版本 
 
 如何确定操作系统版本，我们以麒麟系统为例，如下
 ```
