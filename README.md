@@ -58,7 +58,7 @@
 - [56、LightDB22.3版本Oracle模式下，如何设置search_path？](https://github.com/hslightdb/LightDB-FAQ#lightdb223%E7%89%88%E6%9C%ACoracle%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AEsearch_path)
 
 ## 1、如何选择LightDB安装包
-下载地址：www.hs.net/lightdb ，注册账号登录后选择对应的下载版本 
+下载地址：http://www.light-pg.com/downloadCate.html ，注册账号登录后选择对应的下载版本
 
 如何确定操作系统版本，我们以麒麟系统为例，如下
 ```
@@ -776,15 +776,17 @@ You are now connected to database "fund60" as user "fund60pub".
 fund60pub@fund60=> create schema fund60pub;
 CREATE SCHEMA
 ```
-## 12、如何下载LightDB JDBC驱动
-maven 地址，选择跟数据库对应版本进行下载
+## 12、如何下载和使用LightDB JDBC驱动
+官方文档参考：
+http://www.light-pg.com/docs/LTJDBC/current/index.html  
+maven 地址，选择最新版进行下载
 https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc
 ```
 <!-- https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc -->
 <dependency>
     <groupId>io.github.hslightdb</groupId>
-    <artifactId>lightdb-jdbc</artifactId>
-    <version>22.3.1-221201</version>
+    <artifactId>ltjdbc</artifactId>
+    <version>42.2.24-23.1.0.3</version>
 </dependency>
 ```
 ## 13、选择图形化安装LightDB 无法启动安装界面怎么办
