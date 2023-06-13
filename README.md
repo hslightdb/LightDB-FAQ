@@ -780,7 +780,7 @@ CREATE SCHEMA
 官方文档参考：
 http://www.light-pg.com/docs/LTJDBC/current/index.html  
 maven 地址，选择最新版进行下载
-https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc
+https://mvnrepository.com/artifact/io.github.hslightdb/ltjdbc
 ```
 <!-- https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc -->
 <dependency>
