@@ -58,8 +58,10 @@
 - [56、LightDB22.3版本Oracle模式下，如何设置search_path？](https://github.com/hslightdb/LightDB-FAQ#lightdb223%E7%89%88%E6%9C%ACoracle%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AEsearch_path)
 
 ## 1、如何选择LightDB安装包
-下载地址：http://www.light-pg.com/downloadCate.html ，注册账号登录后选择对应的下载版本
-
+http://www.light-pg.com/downloadCate.html  
+LightDB-X 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_X  
+LightDB-A 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_A  
+LightDB EM 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_EM  
 如何确定操作系统版本，我们以麒麟系统为例，如下
 ```
 # nkvers
@@ -80,7 +82,7 @@ release V10 (SP1) /(Tercel)-x86_64-Build20/20210518
 CPU 运行模式：                   32-bit, 64-bit
 ...
 ```
-可以看出操作系统为麒麟V10，cpu架构为x86_64，则选择 lightdb-x-13.3-22.2-5950-kylinV10.x86_64.zip 进行下载安装 ，其中lightdb-x开始的包为数据库；
+可以看出操作系统为麒麟V10，cpu架构为x86_64，则选择 lightdb-x-13.8-23.1-10555-ky10.hygon64.zip 海光x86进行下载安装 ，其中lightdb-x开始的包为数据库；
 lightdb-em开始的为LightDB PaaS原生服务平台。
 ![img.png](img.png)
 ## 2、LightDB如何进行逻辑备份、恢复
