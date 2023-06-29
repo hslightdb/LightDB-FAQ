@@ -392,6 +392,7 @@ dbeaver下载地址：https://dbeaver.io/
 ![img_5.png](img_5.png)
 上传2个jar文件
 ![img_8.png](img_8.png)
+![img_13.png](img_13.png)
 上述操作完成后，点击"确定"  
 ![img_6.png](img_6.png)  
 点击"关闭"之后，点击左上角加号，选择LightDB驱动程序  
