@@ -391,7 +391,6 @@ dbeaver下载地址：https://dbeaver.io/
 点击"新建"后填入如下内容，同时选择"库"选项，添加LightDB驱动  
 ![img_5.png](img_5.png)
 上传2个jar文件
-![img_8.png](img_8.png)
 ![img_13.png](img_13.png)
 上述操作完成后，点击"确定"  
 ![img_6.png](img_6.png)  
