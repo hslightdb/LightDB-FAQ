@@ -390,7 +390,8 @@ dbeaver下载地址：https://dbeaver.io/
 ![img_4.png](img_4.png)  
 点击"新建"后填入如下内容，同时选择"库"选项，添加LightDB驱动  
 ![img_5.png](img_5.png)
-![img_8.png](img_8.png)  
+上传2个jar文件
+![img_8.png](img_8.png)
 上述操作完成后，点击"确定"  
 ![img_6.png](img_6.png)  
 点击"关闭"之后，点击左上角加号，选择LightDB驱动程序  
@@ -398,7 +399,8 @@ dbeaver下载地址：https://dbeaver.io/
 
 填写数据库IP、端口、用户名、密码等信息，测试连接登录即可  
 ![img_9.png](img_9.png)
-
+最后更改LightDB兼容属性，小写oracle
+![img_10.png](img_10.png)
 
 ## 8、如何实现LightDB访问Oracle表
 ### 1、安装插件
