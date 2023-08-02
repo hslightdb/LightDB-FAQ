@@ -790,7 +790,7 @@ https://mvnrepository.com/artifact/io.github.hslightdb/ltjdbc
 <dependency>
     <groupId>io.github.hslightdb</groupId>
     <artifactId>ltjdbc</artifactId>
-    <version>42.2.24-23.1.0.3</version>
+    <version>42.2.25-23.2.0.1</version>
 </dependency>
 ```
 ## 13、选择图形化安装LightDB 无法启动安装界面怎么办
