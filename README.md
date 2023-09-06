@@ -117,9 +117,10 @@ Flags:                           fp asimd evtstrm aes pmull sha1 sha2 crc32 atom
 可以看出操作系统为麒麟V10sp1，cpu架构为鲲鹏aarch64，则选择 LightDB1.0-x-V202302-00-000-ky10sp1-aarch64.zip 下载安装。
 ![img.png](img.png)
 ## 2、LightDB如何进行逻辑备份、恢复
-### 备份命令
+### 2.1 常用备份和恢复命令
+备份命令
 ```SHELL
-PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d -j 10 --if-exists -c -f subacc1 -v
+PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -n subacc2 -F d -j 10 --if-exists -c -f subacc1 -v
 ```
 说明：
 - PGPASSWORD=密码 
@@ -128,9 +129,9 @@ PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 
 - -h 指定导出实例IP  
 - -p 指定导出实例端口 
 - -d 指定导出数据库名 
-- -n 导出数据库的schema名字 
+- -n 导出数据库的schema名字,可以指定多个schema, 如：-n subacc1 -n subacc2 
 - -j 10 表示使用10个并行进行导出 
-- -F d 其中-F表示导出文件格式，d表示为目录格式 
+- -F d 其中-F表示导出文件格式, d表示为目录格式 
 - --if-exists -c 如果存在就删除重新创建 
 - -f 导出文件名 
 - -v 表示输出日志详情  
@@ -139,18 +140,31 @@ PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 
 $ export PGPASSWORD=xxx
 $ lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d -j 10 --if-exists -c -f subacc1 -v
 ```
-### 恢复命令
+ 常用恢复命令
 ```
 PGPASSWORD=hundsun lt_restore subacc1 -U lightdb -h 10.19.36.28 -p 5432 -n subacc1 -d subacc1 --if-exists -c -v
 ```
-说明：PGPASSWORD=密码 lt_restore 文件名 -U用户名 -h IP  -p 端口 -n schema名字 -d 库名  --if-exists -c 如果存在就删除重新创建 -f 文件名 -v详情）
+说明：
+- lt_restore 
+- subacc1 表示使用lt_dump导出的那个目录名称, 要紧跟lt_restore命令后面  
+其余参数与lt_dump导出说明含义类似
 
-### 并行的进行备份和恢复
+### 2.2 并行的进行备份和恢复
 ```
 PGPASSWORD=hundsun lt_dump -Fd -Ulightdb -h 10.19.36.28 -p 5432 -d fund60 -j8 -f fund60 -c --if-exists -v 
 
 PGPASSWORD=hundsun lt_restore fund60 -U lightdb -h 10.19.36.28 -p 5432 -n fund60acco1 -n fund60pub -j8 -d fund60 --section=pre-data --section=data --if-exists -c -v
 PGPASSWORD=hundsun lt_restore fund60 -U lightdb -h 10.19.36.28 -p 5432 -n fund60acco1 -n fund60pub -d fund60 --section=post-data --if-exists -c -v
+```
+
+### 2.3 导出和导入insert SQL文本
+备份命令  
+```sql
+lt_dump -U test -d test -n test -p 5432 -h 10.20.30.211 --inserts -f test.sql -v
+```
+恢复命令
+```sql
+ltsql -U test -d test -n test -p 5432 -h 10.20.30.210 -f test.sql
 ```
 ## 3、如何进行LightDB客户端部署，LightDB是否有windows版客户端?
 ### 1、安装包上传到客户端服务器
