@@ -166,6 +166,7 @@ lt_dump -U test -d test -n test -p 5432 -h 10.20.30.211 --inserts -f test.sql -v
 ```sql
 ltsql -U test -d test -n test -p 5432 -h 10.20.30.210 -f test.sql
 ```
+说明：优先考虑逻辑备份和恢复的效率, 优先使用2.2方式，因为会使用并行和压缩机制, 如果想导出文本方便获取SQL、表结构定义可以使用2.3方式
 ## 3、如何进行LightDB客户端部署，LightDB是否有windows版客户端?
 ### 1、安装包上传到客户端服务器
 解压并且给予相应的权限，应用服务器系统用户我们以ta6为例
