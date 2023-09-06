@@ -118,10 +118,27 @@ Flags:                           fp asimd evtstrm aes pmull sha1 sha2 crc32 atom
 ![img.png](img.png)
 ## 2、LightDB如何进行逻辑备份、恢复
 ### 备份命令
+```SHELL
+PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d -j 10 --if-exists -c -f subacc1 -v
 ```
-PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d --if-exists -c -f subacc1 -v
+说明：
+- PGPASSWORD=密码 
+- lt_dump 逻辑备份命令 
+- -U 指定导出用户名 
+- -h 指定导出实例IP  
+- -p 指定导出实例端口 
+- -d 指定导出数据库名 
+- -n 导出数据库的schema名字 
+- -j 10 表示使用10个并行进行导出 
+- -F d 其中-F表示导出文件格式，d表示为目录格式 
+- --if-exists -c 如果存在就删除重新创建 
+- -f 导出文件名 
+- -v 表示输出日志详情  
+习惯于MySQL的mysqldump的同学可能会有疑问，一般的密码提示都是放在备份命令中，而PGPASSWORD为什么要放前面，其实这个PG/LightDB的规范，他其实也是shell中的变量
+```SHELL
+$ export PGPASSWORD=xxx
+$ lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d -j 10 --if-exists -c -f subacc1 -v
 ```
-说明：PGPASSWORD=密码 lt_dump  -U用户名 -h IP  -p 端口 -d 库名  -n schema名字 -F 文件格式 --if-exists -c 如果存在就删除重新创建 -f 文件名 -v详情
 ### 恢复命令
 ```
 PGPASSWORD=hundsun lt_restore subacc1 -U lightdb -h 10.19.36.28 -p 5432 -n subacc1 -d subacc1 --if-exists -c -v
