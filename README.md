@@ -383,12 +383,16 @@ test=# show tcp_keepalives%;
 
 ## 7、如何配置LightDB集成开发环境
 Oracle一般习惯使用PL/SQL developer做为集成开发环境，同样LightDB为了使用自己的存储过程等特性，推荐使用dbeaver集成环境并且需要配置LightDB驱动。  
-LightDB驱动下载地址：https://mvnrepository.com/artifact/io.github.hslightdb/lightdb-jdbc    
-dbeaver下载地址：https://dbeaver.io/ 
+LightDB下载最新驱动，看最近日期进行下载，驱动下载地址：https://mvnrepository.com/artifact/io.github.hslightdb/ltjdbc  
+dbeaver下载地址：https://dbeaver.io/   
 下载成功安装后，找到数据库->驱动管理器->新建  
 ![img_3.png](img_3.png)
 ![img_4.png](img_4.png)  
 点击"新建"后填入如下内容，同时选择"库"选项，添加LightDB驱动  
+下面是配置模版，按照模版内容填写    
+org.postgresql.Driver  
+jdbc:postgresql://{host}[:{port}]/[{database}]
+
 ![img_5.png](img_5.png)  
 上传2个jar文件  
 ![img_13.png](img_13.png)
