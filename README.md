@@ -258,8 +258,7 @@ Indexes:
 \h alter table 
 ```
 ## 5、LightDB的递归语法
-我们知道Oracle的递归语句为start with connect by语法。 
-
+我们知道Oracle的递归语句为start with connect by语法，同样在LightDB 23.2及以后版本, LightDB兼容Oracle 递归
 Oracle：
 ```
 SELECT
@@ -297,7 +296,7 @@ START WITH status = 1
 CONNECT BY PRIOR t.parent_module_code = t.module_code
 ORDER BY t.module_code ASC, t.module_name ASC;
 ```
-LightDB 需要使用with recursive 进行改写
+LightDB 23.2 之前建议使用 with recursive 进行改写, 参考示例如下：
 ```
 with recursive cte as (
 select
