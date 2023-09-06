@@ -63,7 +63,7 @@ LightDB-X 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_X
 LightDB-A 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_A  
 LightDB EM 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_EM  
 选择对应的CPU架构和操作系统进行下载
-### 如何确定操作系统版本呢？
+### 1.1 如何确定操作系统版本呢？
 我们以麒麟系统为例，如下
 ```
 # nkvers
@@ -116,7 +116,7 @@ Flags:                           fp asimd evtstrm aes pmull sha1 sha2 crc32 atom
 ```
 可以看出操作系统为麒麟V10sp1，cpu架构为鲲鹏aarch64，则选择 LightDB1.0-x-V202302-00-000-ky10sp1-aarch64.zip 下载安装。
 ![img.png](img.png)
-### 安装
+### 1.2 使用安装手册进行安装
 LightDB文档入口：http://www.light-pg.com/documents.html  
 上述链接中包含LightDB官方手册、安装文档、数据库迁移文档、JDBC参考手册、数据库参考手册等，建议详细阅读  
 LightDB-X安装文档：http://www.light-pg.com/docs/LightDB_Install_Manual/current/index.html  
