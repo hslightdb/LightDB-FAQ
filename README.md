@@ -57,7 +57,7 @@
 - [55、如何通过java jdbc调用LightDB存储过程](https://github.com/hslightdb/LightDB-FAQ#55%E5%A6%82%E4%BD%95%E9%80%9A%E8%BF%87java-jdbc%E8%B0%83%E7%94%A8lightdb%E5%AD%98%E5%82%A8%E8%BF%87%E7%A8%8B)
 - [56、LightDB22.3版本Oracle模式下，如何设置search_path？](https://github.com/hslightdb/LightDB-FAQ#lightdb223%E7%89%88%E6%9C%ACoracle%E6%A8%A1%E5%BC%8F%E4%B8%8B%E5%A6%82%E4%BD%95%E8%AE%BE%E7%BD%AEsearch_path)
 
-## 1、如何选择LightDB安装包
+## 1、如何选择LightDB安装包进行安装及确认数据库模式
 LightDB下载页面：http://www.light-pg.com/downloadCate.html  
 LightDB-X 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_X  
 LightDB-A 下载地址：http://www.light-pg.com/downloadList.html?key=lightDB_A  
@@ -121,6 +121,46 @@ LightDB文档入口：http://www.light-pg.com/documents.html
 上述链接中包含LightDB官方手册、安装文档、数据库迁移文档、JDBC参考手册、数据库参考手册等，建议详细阅读  
 LightDB-X安装文档：http://www.light-pg.com/docs/LightDB_Install_Manual/current/index.html  
 LightDB-A安装文档：http://www.light-pg.com/docs/LightDB-A-Install-Manual/current/index.html  
+### 1.3 确认LightDB数据库模式为Oracle还是MySQL
+LightDB支持三种数据库模式, 分别是Oracle、MySQL、PostgreSQL, 我们可以登录到对应的业务数据库中通过下面命令确认：
+```sql
+-- 确保登录到业务数据库中，而不是默认的postgresql库或者lt_test库
+-- 使用\l+查询实例中有哪些数据库
+
+$ ltsql -U test -d test
+ltsql (13.8-23.2)
+Type "help" for help.
+test@test=# \l+
+                                                                         List of databases
+         Name          |  Owner  | Encoding |   Collate   |    Ctype    |   Access privileges   |  Size   | Tablespace |                Description                 
+-----------------------+---------+----------+-------------+-------------+-----------------------+---------+------------+--------------------------------------------
+ lt_test               | lightdb | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 14 MB   | pg_default | 
+ ltcluster             | lightdb | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 1070 MB | pg_default | 
+ postgres              | lightdb | UTF8     | en_US.UTF-8 | en_US.UTF-8 |                       | 120 GB  | pg_default | default administrative connection database
+ template0             | lightdb | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/lightdb           +| 8217 kB | pg_default | unmodifiable empty database
+ template1             | lightdb | UTF8     | en_US.UTF-8 | en_US.UTF-8 | =c/lightdb           +| 8217 kB | pg_default | default template for new databases
+
+test@test=# show %compatible_type%;
+                  name                  | setting |                                   description                                
+   
+----------------------------------------+---------+------------------------------------------------------------------------------
+---
+ lightdb_dblevel_syntax_compatible_type | Oracle  | Show syntax compatible type for current database.
+ lightdb_syntax_compatible_type         | Oracle  | Default syntax compatible type when create database.  Support MySQL and Oracl
+e.
+(2 rows)
+     
+-- 如下表示test用户登录到postgres数据库下, test@postgres表示：用户@数据库
+test@test=# \c postgres
+You are now connected to database "postgres" as user "test".
+test@postgres=# 
+test@postgres=# show %compatible_type%;
+                  name                  | setting |                                   description                                   
+----------------------------------------+---------+---------------------------------------------------------------------------------
+ lightdb_dblevel_syntax_compatible_type | off     | Show syntax compatible type for current database.
+ lightdb_syntax_compatible_type         | Oracle  | Default syntax compatible type when create database.  Support MySQL and Oracle.
+(2 rows)
+```
 ## 2、LightDB如何进行逻辑备份、恢复
 ### 2.1 常用备份和恢复命令
 备份命令
