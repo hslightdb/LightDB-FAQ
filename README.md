@@ -213,11 +213,11 @@ $ lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d -j 10 --if-e
 ```
  常用恢复命令
 ```
-PGPASSWORD=hundsun lt_restore subacc1 -U lightdb -h 10.19.36.28 -p 5432 -n subacc1 -d subacc1 --if-exists -c -v
+PGPASSWORD=hundsun lt_restore subacc1 -U lightdb -h 10.19.36.28 -p 5432 -d subacc1 --if-exists -c -v
 ```
 说明：
 - lt_restore 
-- subacc1 表示使用lt_dump导出的那个目录名称, 要紧跟lt_restore命令后面  
+- subacc1 表示使用lt_dump导出的那个目录名称, 要紧跟lt_restore命令后面
 其余参数与lt_dump导出说明含义类似
 
 ### 2.2 并行的进行备份和恢复
@@ -1910,7 +1910,7 @@ public class testCallPgProcedure {
 ## LightDB22.3版本Oracle模式下，如何设置search_path？
 首先确认下您的数据库是什么模式，执行下面语句，可以看到结果为Oracle，那么此环境为Oracle模式数据库
 ```shell
-lightdb@lt_test=# show lightdb_syntax_compatible_type ;
+lightdb@lt_test=# show %compatible_type% ;
  lightdb_syntax_compatible_type 
 --------------------------------
  Oracle
