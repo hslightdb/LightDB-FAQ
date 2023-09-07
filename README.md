@@ -122,7 +122,7 @@ LightDB文档入口：http://www.light-pg.com/documents.html
 LightDB-X安装文档：http://www.light-pg.com/docs/LightDB_Install_Manual/current/index.html  
 LightDB-A安装文档：http://www.light-pg.com/docs/LightDB-A-Install-Manual/current/index.html  
 ### 1.3 确认LightDB数据库模式为Oracle还是MySQL
-LightDB支持三种数据库模式, 分别是Oracle、MySQL、PostgreSQL, 我们可以登录到对应的业务数据库中通过下面命令确认：
+LightDB支持三种数据库模式, 分别是Oracle、MySQL、PostgreSQL, 我们可以登录到对应的业务数据库中通过下面命令确认： 
 ```sql
 -- 确保登录到业务数据库中，而不是默认的postgresql库或者lt_test库
 -- 使用\l+查询实例中有哪些数据库
@@ -161,6 +161,29 @@ test@postgres=# show %compatible_type%;
  lightdb_syntax_compatible_type         | Oracle  | Default syntax compatible type when create database.  Support MySQL and Oracle.
 (2 rows)
 ```
+创建数据库语句
+```sql
+test@test=# \h create database
+Command:     CREATE DATABASE
+Description: create a new database
+Syntax:
+CREATE DATABASE name
+    [ [ WITH ] [ OWNER [=] user_name ]
+           [ TEMPLATE [=] template ]
+           [ ENCODING [=] encoding ]
+           [ LOCALE [=] locale ]
+           [ LC_COLLATE [=] lc_collate ]
+           [ LC_CTYPE [=] lc_ctype ]
+           [ TABLESPACE [=] tablespace_name ]
+           [ ALLOW_CONNECTIONS [=] allowconn ]
+           [ CONNECTION LIMIT [=] connlimit ]
+           [ IS_TEMPLATE [=] istemplate ] ]
+           [ LIGHTDB_SYNTAX_COMPATIBLE_TYPE [=] compa_type ] ]
+```
+说明：
+- lightdb_syntax_compatible_type表示安装数据库软件时的默认级别
+- lightdb_dblevel_syntax_compatible_type表示数据库级别的模式，Oracle即为Oracle模式、Mysql为MySQL模式、off表示为默认的PostgreSQL模式，其中postgres和lt_test默认都为off的PostgreSQL模式
+
 ## 2、LightDB如何进行逻辑备份、恢复
 ### 2.1 常用备份和恢复命令
 备份命令
