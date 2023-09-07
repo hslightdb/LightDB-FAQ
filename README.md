@@ -1,6 +1,6 @@
 # LightDB（22.4之前版本 && 23.1之后版本） FAQ
 
-- [1、如何选择LightDB安装包和进行安装](https://github.com/hslightdb/LightDB-FAQ#1%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9lightdb%E5%AE%89%E8%A3%85%E5%8C%85)  
+- [1、如何选择LightDB安装包进行安装及确认数据库模式](https://github.com/hslightdb/LightDB-FAQ#1%E5%A6%82%E4%BD%95%E9%80%89%E6%8B%A9lightdb%E5%AE%89%E8%A3%85%E5%8C%85)  
 - [2、LightDB如何进行逻辑备份、恢复](https://github.com/hslightdb/LightDB-FAQ#2lightdb%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8C%E9%80%BB%E8%BE%91%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D)  
 - [3、如何进行LightDB客户端部署，LightDB是否有windows版客户端?](https://github.com/hslightdb/LightDB-FAQ#3%E5%A6%82%E4%BD%95%E8%BF%9B%E8%A1%8Clightdb%E5%AE%A2%E6%88%B7%E7%AB%AF%E9%83%A8%E7%BD%B2lightdb%E6%98%AF%E5%90%A6%E6%9C%89windows%E7%89%88%E5%AE%A2%E6%88%B7%E7%AB%AF)    
 - [4、LightDB更改列属性语法](https://github.com/hslightdb/LightDB-FAQ#4lightdb%E6%9B%B4%E6%94%B9%E5%88%97%E5%B1%9E%E6%80%A7%E8%AF%AD%E6%B3%95)  
@@ -116,6 +116,9 @@ Flags:                           fp asimd evtstrm aes pmull sha1 sha2 crc32 atom
 ```
 可以看出操作系统为麒麟V10sp1，cpu架构为鲲鹏aarch64，则选择 LightDB1.0-x-V202302-00-000-ky10sp1-aarch64.zip 下载安装。
 ![img.png](img.png)
+同样的客户端包需要下载包类型为"客户端"的软件包，如下所示：  
+![img_8.png](img_8.png)
+关于客户端包的使用可以参考该链接：https://blog.csdn.net/yunmu666/article/details/130732807  
 ### 1.2 使用安装手册进行安装
 LightDB文档入口：http://www.light-pg.com/documents.html  
 上述链接中包含LightDB官方手册、安装文档、数据库迁移文档、JDBC参考手册、数据库参考手册等，建议详细阅读  
