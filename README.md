@@ -513,7 +513,6 @@ test=# show tcp_keepalives%;
 (3 rows)
 ```
 
-
 ## 7、如何配置LightDB集成开发环境
 Oracle一般习惯使用PL/SQL developer做为集成开发环境，同样LightDB为了使用自己的存储过程等特性，推荐使用dbeaver集成环境并且需要配置LightDB驱动。  
 下载最新LightDB驱动，选择最新日期进行下载，驱动下载地址：https://mvnrepository.com/artifact/io.github.hslightdb/ltjdbc  
@@ -999,8 +998,82 @@ lt_ctl -D $LTDATA reload
 
 如果希望启用auto_explain，则需要修改`lightdb.conf`中的`shared_preload_libraries`，在其中添加auto_explain，然后重启数据库。**对于LightDB单机版，可以直接执行lt_ctl -D $LTDATA restart即可，但如果安装的是LightDB高可用或分布式，则务必按高可用和分布式的停止与启动步骤进行操作。**
 
-## 18、如何通过lt_probackup对数据库进行物理备份和恢复
+## 18、ltsql常见命令帮助和数据库视图信息
+### 18.1 ltsql使用帮助
+```sql
+lightdb@hsfuttest=# \?
+General
+  \copyright             show LightDB usage and distribution terms
+  \crosstabview [COLUMNS] execute query and display results in crosstab
+  \errverbose            show most recent error message at maximum verbosity
+  \g [(OPTIONS)] [FILE]  execute query (and send results to file or |pipe);
+                         \g with no arguments is equivalent to a semicolon
+  \gdesc                 describe result of query, without executing it
+  \gexec                 execute query, then execute each value in its result
+  \gset [PREFIX]         execute query and store results in ltsql variables
+  \gx [(OPTIONS)] [FILE] as \g, but forces expanded output mode
+  \q                     quit ltsql
+  \watch [SEC]           execute query every SEC seconds
 
+Help
+  \? [commands]          show help on backslash commands
+  \? options             show help on ltsql command-line options
+  \? variables           show help on special variables
+  \h [NAME]              help on syntax of SQL commands, * for all commands
+
+-- 查看版本信息
+lsql -V 
+psql -c "select version()"
+select version();
+-- 列表查看所有已安装的数据库
+\l+
+或者
+ltsql -p 65534 -l
+                                    List of databases
+     Name      |  Owner  | Encoding |  Collate   |   Ctype    |     Access privileges     
+---------------+---------+----------+------------+------------+---------------------------
+ hsfut         | lightdb | UTF8     | en_US.utf8 | en_US.utf8 | =Tc/lightdb              +
+               |         |          |            |            | lightdb=CTc/lightdb      +
+               |         |          |            |            | hsfut=CTc/lightdb
+ hsfut_plpgsql | lightdb | UTF8     | en_US.utf8 | en_US.utf8 | =Tc/lightdb              +
+               |         |          |            |            | lightdb=CTc/lightdb      +
+               |         |          |            |            | hsfut_plpgsql=CTc/lightdb
+ lt_test       | lightdb | UTF8     | en_US.utf8 | en_US.utf8 | 
+ postgres      | lightdb | UTF8     | en_US.utf8 | en_US.utf8 | 
+ template0     | lightdb | UTF8     | en_US.utf8 | en_US.utf8 | =c/lightdb               +
+               |         |          |            |            | lightdb=CTc/lightdb
+ template1     | lightdb | UTF8     | en_US.utf8 | en_US.utf8 | =c/lightdb               +
+               |         |          |            |            | lightdb=CTc/lightdb
+(6 rows)
+
+-- 执行操作系统命令
+\! ls
+
+-- 查看当前连接的数据库名称
+select current_database();
+-- 查看当前连接的用户名：
+select * from current_user;
+select user;
+-- 列表浏览数据库实体对象
+\d+ 
+
+```
+创建用户
+```sql
+创建用户
+CREATE USER user2 WITH ENCRYPTED PASSWORD '123456';
+\password [USERNAME] 
+
+检验所创建的拥有者
+\du uesr1
+
+连接数据库
+\c <sample_db_name> [username]
+
+得到psql元命令实际执行的sql
+psql -E 或者
+\set ECHO_HIDDEN on|off
+```
 
 ## 19、查看安装了哪些extension
 
