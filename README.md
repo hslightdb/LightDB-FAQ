@@ -519,7 +519,7 @@ dbeaver下载地址：https://dbeaver.io/
 ![img_3.png](img_3.png)
 ![img_4.png](img_4.png)  
 点击"新建"后填入如下内容，同时选择"库"选项，添加LightDB驱动  
-下面是配置模版，按照模版内容填写    
+下面是配置模版，需要完全按照模版内容填写    
 org.postgresql.Driver  
 jdbc:postgresql://{host}[:{port}]/[{database}]
 
@@ -1888,5 +1888,4 @@ jdbc:postgresql://localhost:5432/lt_test?currentSchema=\"$user\", oracle
 ```
 此时，jdbc会自动补充public到search_path中。实际search_path是\"$user\", oracle, public, lt_catalog 。文档地址：https://jdbc.postgresql.org/documentation/use/#connection-parameters
 
-同理，如果您的数据库为MySQL模式，将上面的oracle替换为mysql即可。  
- 
+同理，如果您的数据库为MySQL模式，将上面的oracle替换为mysql即可。
