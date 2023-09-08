@@ -1022,8 +1022,8 @@ Help
   \h [NAME]              help on syntax of SQL commands, * for all commands
 
 -- 查看版本信息
-lsql -V 
-psql -c "select version()"
+ltsql -V 
+ltsql -c "select version()"
 select version();
 -- 列表查看所有已安装的数据库
 \l+
