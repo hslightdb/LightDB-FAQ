@@ -191,7 +191,7 @@ CREATE DATABASE name
 ### 2.1 常用备份和恢复命令
 备份命令
 ```SHELL
-PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -n subacc2 -F d -j 10 --if-exists -c -f subacc1 -v
+PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -n subacc2 -F d -j 10 --if-exists -c -f subacc1 -v > exp.log 2>&1 & 
 ```
 说明：
 - PGPASSWORD=密码 
@@ -209,11 +209,11 @@ PGPASSWORD=hundsun lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 
 习惯于MySQL的mysqldump的同学可能会有疑问，一般的密码提示都是放在备份命令中，而PGPASSWORD为什么要放前面，其实这个PG/LightDB的规范，他其实也是shell中的变量
 ```SHELL
 $ export PGPASSWORD=xxx
-$ lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d -j 10 --if-exists -c -f subacc1 -v
+$ lt_dump -Usubacc1 -h10.19.36.28 -p5432 -d subacc1 -n subacc1 -F d -j 10 --if-exists -c -f subacc1 -v > exp.log 2>&1 & 
 ```
  常用恢复命令
 ```
-PGPASSWORD=hundsun lt_restore subacc1 -U lightdb -h 10.19.36.28 -p 5432 -d subacc1 --if-exists -c -v
+PGPASSWORD=hundsun lt_restore subacc1 -U lightdb -h 10.19.36.28 -p 5432 -d subacc1 --if-exists -c -v > imp.log 2>&1 & 
 ```
 说明：
 - lt_restore 
