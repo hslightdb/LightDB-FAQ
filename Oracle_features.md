@@ -72,14 +72,271 @@ all_all_tables 视图包含了当前用户可访问的所有表的信息，包�
 | cluster_owner             | 表所在集群的所有者。                                                                                                                                                                                                                                                                   |
 | dependencies              | 表的依赖项。                                                                                                                                                                                                                                                                           |
 
-#### 1.1.6.2 all_catalog                          
-#### 1.1.6.3 all_col_comments                     
-#### 1.1.6.4 all_cons_columns                     
-#### 1.1.6.5 all_constraints                      
-#### 1.1.6.6 all_dependencies                     
-#### 1.1.6.7 all_ind_columns                      
-#### 1.1.6.8 all_ind_expressions                  
-#### 1.1.6.9 all_ind_partitions                   
+#### 1.1.6.2 all_catalog     
+**描述：**
+all_catalog all_catalog 视图包含了当前用户可访问的所有表、视图和序列的信息。
+
+**列信息：**
+
+| 列名                | 描述                                                                                                                                                                                         |
+|---------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| owner               | 对象所有者的用户名。                                                                                                                                                                           |
+| table_name          | 表的名称。                                                                                                                                                                                     |
+| table_type          | 对象的类型：表、视图或序列。                                                                                                                                                                    |
+| clustered           | 如果对象是聚集表，则为 "YES"；否则为 "NO"。                                                                                                                                                      |
+| secondary           | 如果对象是次要对象，则为 "YES"；否则为 "NO"。                                                                                                                                                     |
+| index_table         | 如果对象是索引表，则为 "YES"；否则为 "NO"。                                                                                                                                                      |
+| temporary           | 如果对象是临时对象，则为 "YES"；否则为 "NO"。                                                                                                                                                    |
+| dropped             | 如果对象已删除，则为 "YES"；否则为 "NO"。                                                                                                                                                        |
+| global_stats        | 如果对象包含全局统计信息，则为 "YES"；否则为 "NO"。                                                                                                                                              |
+| user_stats          | 如果对象包含用户统计信息，则为 "YES"；否则为 "NO"。                                                                                                                                              |
+| aux_stats           | 如果对象包含辅助统计信息，则为 "YES"；否则为 "NO"。                                                                                                                                              |
+| parttype            | 分区类型：RANGE（范围分区）、HASH（哈希分区）、LIST（列表分区）或 COMPOSITE（组合分区）。                                                                                                           |
+| refpartname         | 分区的引用对象的名称。                                                                                                                                                                         |
+| supertype           | 如果对象是超类型，则为 "YES"；否则为 "NO"。                                                                                                                                                      |
+| container_table     | 如果对象是容器表，则为 "YES"；否则为 "NO"。                                                                                                                                                     |
+| editioned           | 如果对象是兼容版控制的，则为 "YES"；否则为 "NO"。                                                                                                                                                |
+| sharded             | 如果对象是分片的，则为 "YES"；否则为 "NO"。                                                                                                                                                      |
+| container_data      | 如果对象是容器数据对象，则为 "YES"；否则为 "NO"。                                                                                                                                                |
+| object_id           | 对象的唯一标识符。                                                                                                                                                                             |
+| secondary_instance  | 如果对象是次要实例，则为 "YES"；否则为 "NO"。                                                                                                                                                   |
+| can_use_for_pivot   | 如果对象可以用于数据透视表，则为 "YES"；否则为 "NO"。                                                                                                                                           |
+| partitioned         | 如果对象是分区对象，则为 "YES"；否则为 "NO"。                                                                                                                                                   |
+| object_type         | 对象的类型，如 TABLE、VIEW、SYNONYM 等。                                                                                                                                                         |
+| container_map       | 如果对象是容器映射，则为 "YES"；否则为 "NO"。                                                                                                                                                   |
+| object_link         | 如果对象是对象链接，则为 "YES"；否则为 "NO"。                                                                                                                                                   |
+| container_privilege | 如果对象是容器特权，则为 "YES"；否则为 "NO"。                                                                                                                                                   |
+| storage             | 对象的存储类型，如 PERMANENT、UNDO、TEMPORARY 等。                                                                                                                                               |
+| editioning_view     | 如果对象是版本控制的视图，则为 "YES"；否则为 "NO"。                                                                                                                                              |
+| editioned_view      | 如果对象是已发布的版本控制视图，则为 "YES"；否则为 "NO"。                                                                                                                                       |
+| object_name         | 对象的名称。                                                                                                                                                                                   |
+| default_collation   | 对象的默认排序规则。                                                                                                                                                                           |
+| edition_name        | 对象所属的版本名称。                                                                                                                                                                           |
+| editionable         | 如果对象可以作为版本的一部分进行管理，则为 "YES"；否则为 "NO"。                                                                                                                                  |
+| last_ddl_time       | 对象的最后一次 DDL 操作的时间。                                                                                                                                                                |
+| inmemory            | 如果对象是内存优化的，则为 "ENABLED"；否则为 "DISABLED"。                                                                                                                                       |
+| generated           | 如果对象是自动生成的，则为 "YES"；否则为 "NO"。                                                                                                                                                  |
+| duration            | 对象的持续时间。                                                                                                                                                                               |
+| secondary_object_id | 如果对象是次要对象，则为对象的次要标识符。                                                                                                                                                      |
+| container_data_link | 如果对象是容器数据链接，则为 "YES"；否则为 "NO"。                                                                                                                                               |
+| container_map_expr  | 容器映射的表达式。                                                                                                                                                                             |
+| xml_schema_name     | XML 对象所属的模式名称。                                                                                                                                                                       |
+| xml_schema_namespace| XML 对象的命名空间。                                                                                                                                                                           |
+
+
+#### 1.1.6.3 all_col_comments
+
+**描述：**
+all_col_comments 视图包含了当前用户可访问的所有表和视图列的注释信息。
+
+**列信息：**
+
+| 列名            | 描述                                                                                                     |
+|-----------------|----------------------------------------------------------------------------------------------------------|
+| owner           | 列所属对象的所有者用户名。                                                                                 |
+| table_name      | 列所属的表或视图的名称。                                                                                   |
+| column_name     | 列的名称。                                                                                                 |
+| comments        | 列的注释信息。                                                                                             |
+| data_default    | 列的默认值。                                                                                               |
+| nullable        | 如果列可为空，则为 "YES"；否则为 "NO"。                                                                   |
+| data_type       | 列的数据类型。                                                                                             |
+| data_length     | 列数据的长度（以字节为单位）。                                                                             |
+| data_precision  | 数字列的精度（总位数）。如果列不是数字列，则为空。                                                       |
+| data_scale      | 数字列的标度（小数点后的位数）。如果列不是数字列，则为空。                                               |
+| num_distinct    | 列的唯一值数量。                                                                                           |
+| low_value       | 列的最小值。                                                                                               |
+| high_value      | 列的最大值。                                                                                               |
+| density         | 列的密度。                                                                                                |
+| num_nulls       | 列中的空值数量。                                                                                           |
+| histogram       | 直方图的类型。                                                                                            |
+| timestamp#      | 列的时间戳。                                                                                              |
+| column_id       | 列的 ID。                                                                                                  |
+| default_length  | 默认长度。                                                                                                |
+| num_buckets     | 直方图的存储数量。                                                                                        |
+| distinct_keys   | 直方图中的不同键的数量。                                                                                  |
+| low_value_#     | 低值。                                                                                                    |
+| high_value_#    | 高值。                                                                                                    |
+| density_#       | 密度。                                                                                                    |
+| num_nulls_#     | 空值数量。                                                                                                |
+| histogram_#     | 直方图类型。                                                                                              |
+| histogram_2     | 直方图类型 2。                                                                                            |
+| drop_column     | 如果列已删除，则为 "YES"；否则为 "NO"。                                                                   |
+| column_name_#   | 列名。                                                                                                    |
+| user_generated  | 如果列是用户生成的，则为 "YES"；否则为 "NO"。                                                             |
+| hidden_column   | 如果列是隐藏列，则为 "YES"；否则为 "NO"。                                                                 |
+| virtual_column  | 如果列是虚拟列，则为 "YES"；否则为 "NO"。                                                                 |
+| segment_column  | 如果列是分段列，则为 "YES"；否则为 "NO"。                                                                 |
+| result_cache    | 如果列是结果缓存列，则为 "YES"；否则为 "NO"。                                                             |
+| join_column     | 如果列是连接列，则为 "YES"；否则为 "NO"。                                                                 |
+| valid_column    | 如果列是有效列，则为 "YES"；否则为 "NO"。                                                                 |
+| duration_column | 如果列是持续列，则为 "YES"；否则为 "NO"。                                                                 |
+| app_default     | 如果列有应用程序默认值，则为 "YES"；否则为 "NO"。                                                         |
+| hidden_default  | 如果列有隐藏默认值，则为 "YES"；否则为 "NO"。                                                             |
+| expression      | 列的表达式。                                                                                              |
+| column_usage    | 列的用途。                                                                                               |
+| comment$        | 评论。                                                                                                    |
+
+
+#### 1.1.6.4 all_cons_columns
+
+**描述：**
+all_cons_columns 视图包含了与约束相关的列信息，包括约束名、列名、位置和数据类型。
+
+**列信息：**
+
+| 列名               | 描述                                                                                                     |
+|--------------------|----------------------------------------------------------------------------------------------------------|
+| owner              | 约束所属对象的所有者用户名。                                                                               |
+| constraint_name    | 约束的名称。                                                                                             |
+| table_name         | 约束所属的表的名称。                                                                                       |
+| column_name        | 约束涉及的列的名称。                                                                                     |
+| position           | 列在约束中的位置。                                                                                         |
+| table_owner        | 表所有者的用户名。                                                                                         |
+| data_default       | 列的默认值。                                                                                             |
+| data_type          | 列的数据类型。                                                                                             |
+| data_length        | 列数据的长度（以字节为单位）。                                                                             |
+| data_precision     | 数字列的精度（总位数）。如果列不是数字列，则为空。                                                       |
+| data_scale         | 数字列的标度（小数点后的位数）。如果列不是数字列，则为空。                                               |
+| nullable           | 如果列可为空，则为 "YES"；否则为 "NO"。                                                                   |
+| data_type_mod      | 列的类型修改器。                                                                                         |
+| data_type_owner    | 数据类型所有者。                                                                                           |
+| data_type_owner_id | 数据类型所有者的 ID。                                                                                      |
+| data_type_link     | 数据类型链接。                                                                                             |
+| column_id          | 列的 ID。                                                                                                  |
+| default_length     | 默认长度。                                                                                                |
+| data_precision_radix | 数据精度的基数。                                                                                         |
+| hidden_column      | 如果列是隐藏列，则为 "YES"；否则为 "NO"。                                                                 |
+| virtual_column     | 如果列是虚拟列，则为 "YES"；否则为 "NO"。                                                                 |
+| segment_column     | 如果列是分段列，则为 "YES"；否则为 "NO"。                                                                 |
+| internal_column_id | 内部列 ID。                                                                                               |
+| hidden_default     | 如果列有隐藏默认值，则为 "YES"；否则为 "NO"。                                                             |
+| user_generated     | 如果列是用户生成的，则为 "YES"；否则为 "NO"。                                                             |
+| default_on_null    | 如果列默认为 NULL，则为 "YES"；否则为 "NO"。                                                               |
+| identity_column    | 如果列是标识列，则为 "YES"；否则为 "NO"。                                                                 |
+| join_column        | 如果列是连接列，则为 "YES"；否则为 "NO"。                                                                 |
+| join_column_id     | 连接列的 ID。                                                                                             |
+| table_link         | 表链接。                                                                                                  |
+| column_usage       | 列的用途。                                                                                               |
+| expression         | 列的表达式。                                                                                              |
+| dependency         | 列的依赖项。                                                                                              |
+| comment$           | 评论。                                                                                                    |
+                
+#### 1.1.6.5 all_constraints
+
+**描述：**
+all_constraints 视图包含了当前用户可访问的所有约束的信息，包括主键、外键、唯一键和检查约束等。
+
+**列信息：**
+
+| 列名             | 描述                                                                                                             |
+|------------------|------------------------------------------------------------------------------------------------------------------|
+| owner            | 约束所属对象的所有者用户名。                                                                                       |
+| constraint_name  | 约束的名称。                                                                                                     |
+| constraint_type  | 约束的类型，例如，'P' 表示主键约束，'U' 表示唯一键约束，'R' 表示引用约束，'C' 表示检查约束。                        |
+| table_name       | 约束所属的表的名称。                                                                                               |
+| search_condition | 如果约束是检查约束，则是检查条件。                                                                                   |
+| r_owner          | 如果约束是引用约束，则是引用约束所属对象的所有者用户名。                                                             |
+| r_constraint_name| 如果约束是引用约束，则是引用约束的名称。                                                                           |
+| delete_rule      | 如果约束是引用约束，则是删除规则。                                                                                 |
+| status           | 约束的状态。                                                                                                     |
+| deferrable       | 如果约束是延迟的，则为 "DEFERRABLE"；否则为 "NOT DEFERRABLE"。                                                      |
+| deferred         | 如果约束是延迟激活的，则为 "DEFERRED"；否则为 "IMMEDIATE"。                                                          |
+| validated        | 如果约束是验证过的，则为 "VALIDATED"；否则为 "NOT VALIDATED"。                                                      |
+| generated        | 如果约束是自动生成的，则为 "GENERATED NAME"；否则为 "USER NAME"。                                                   |
+| bad              | 如果约束无效，则为 "BAD"；否则为 "N/A"。                                                                           |
+| rely             | 如果约束是依赖性约束，则为 "RELY"；否则为 "N/A"。                                                                  |
+| last_change      | 最后一次更改约束的时间。                                                                                           |
+| index_owner      | 索引所属对象的所有者用户名。                                                                                       |
+| index_name       | 索引的名称。                                                                                                     |
+| invalid          | 如果约束是无效的，则为 "INVALID"；否则为 "N/A"。                                                                   |
+| view_related     | 如果约束与视图相关，则为 "YES"；否则为 "NO"。                                                                      |
+| delete_rule      | 删除约束的规则。                                                                                                 |
+| r_owner          | 引用约束所属对象的所有者用户名。                                                                                   |
+| r_constraint_name| 引用约束的名称。                                                                                                 |
+| search_condition | 检查约束的条件。                                                                                                 |
+| r_owner          | 引用约束所属对象的所有者用户名。                                                                                   |
+| r_constraint_name| 引用约束的名称。                                                                                                 |
+| search_condition | 检查约束的条件。                                                                                                 |
+                     
+#### 1.1.6.6 all_dependencies
+
+**描述：**
+all_dependencies 视图包含了对象之间的依赖关系信息，包括对象依赖类型、依赖的对象名称等。
+
+**列信息：**
+
+| 列名            | 描述                                                                                          |
+|-----------------|-----------------------------------------------------------------------------------------------|
+| owner           | 对象的所有者用户名。                                                                             |
+| name            | 对象的名称。                                                                                    |
+| type            | 对象的类型（例如，TABLE、VIEW、PACKAGE 等）。                                                     |
+| referenced_owner| 引用对象的所有者用户名。                                                                         |
+| referenced_name | 引用对象的名称。                                                                                |
+| referenced_type | 引用对象的类型（例如，TABLE、VIEW、PACKAGE 等）。                                                 |
+| dependent_owner | 依赖对象的所有者用户名。                                                                         |
+| dependent_name  | 依赖对象的名称。                                                                                |
+| dependent_type  | 依赖对象的类型（例如，TABLE、VIEW、PACKAGE 等）。                                                 |
+| dependency_type | 依赖关系的类型（例如，NORMAL、IMPLICIT、REVALIDATION、HARD、FORCE、REFERENCE、REFERENCE_PARTITIONED）。|
+                   
+#### 1.1.6.7 all_ind_columns
+
+**描述：**
+all_ind_columns 视图包含了所有索引的列级别信息，包括索引名、表名、列名等。
+
+**列信息：**
+
+| 列名             | 描述                                                               |
+|------------------|--------------------------------------------------------------------|
+| index_owner      | 索引所属对象的所有者用户名。                                         |
+| index_name       | 索引的名称。                                                       |
+| table_owner      | 索引所属的表的所有者用户名。                                         |
+| table_name       | 索引所属的表的名称。                                                 |
+| column_name      | 索引涉及的列的名称。                                               |
+| column_position  | 列在索引中的位置。                                                   |
+| column_length    | 列的长度。                                                         |
+| char_length      | 列的字符长度。                                                     |
+| descend          | 如果列是降序排序的，则为 "DESC"；否则为 "ASC"。                       |
+| table_name       | 索引所属的表的名称。                                                 |
+| table_type       | 索引所属的表的类型。                                                 |
+                    
+#### 1.1.6.8 all_ind_expressions
+
+**描述：**
+all_ind_expressions 视图包含了所有索引的表达式级别信息，包括索引名、表名、索引表达式等。
+
+**列信息：**
+
+| 列名            | 描述                                               |
+|-----------------|----------------------------------------------------|
+| index_owner     | 索引所属对象的所有者用户名。                         |
+| index_name      | 索引的名称。                                       |
+| table_owner     | 索引所属的表的所有者用户名。                         |
+| table_name      | 索引所属的表的名称。                                 |
+| column_expression | 索引的列级表达式。                                 |
+| column_position | 表达式在索引中的位置。                               |
+| column_length   | 表达式的长度。                                     |
+| char_length     | 表达式的字符长度。                                 |
+
+                 
+#### 1.1.6.9 all_ind_partitions
+
+**描述：**
+all_ind_partitions 视图包含了所有索引分区的信息，包括索引名、分区名、表名等。
+
+**列信息：**
+
+| 列名             | 描述                                               |
+|------------------|----------------------------------------------------|
+| index_owner      | 索引所属对象的所有者用户名。                         |
+| index_name       | 索引的名称。                                       |
+| partition_name   | 分区的名称。                                       |
+| subpartition_count| 子分区的数量。                                     |
+| high_value       | 分区的高值。                                       |
+| table_name       | 索引所属的表的名称。                                 |
+| table_owner      | 索引所属的表的所有者用户名。                         |
+| table_partitioned| 表是否分区。若分区，则为 "YES"；否则为 "NO"。         |
+
+                 
 #### 1.1.6.10 all_ind_statistics                   
 #### 1.1.6.11 all_index_usage                      
 #### 1.1.6.12 all_indexes                          
