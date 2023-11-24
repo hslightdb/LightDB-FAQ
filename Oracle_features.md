@@ -16,10 +16,205 @@
 
 ### 1.1.6 系统视图
 
-| 特性       | Oracle              | LightDB                      |
-|------------|---------------------|------------------------------|
-| 字典视图   | 800+字典视图       | 兼容138个字典视图             |
-| 性能视图   | 300+性能视图       | 兼容1个（v$nls_parameters）  |
+#### 1.1.6.1 all_all_tables     
+**描述：**
+all_all_tables 视图包含了当前用户可访问的所有表的信息，包括表名、表空间、所有者等。
+
+| 列名                      | 描述                                                                                                                                                                                                                                                                                   |
+|---------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| owner                     | 表所有者的用户名。                                                                                                                                                                                                                                                                     |
+| table_name                | 表的名称。                                                                                                                                                                                                                                                                             |
+| tablespace_name           | 表所在的表空间名称。                                                                                                                                                                                                                                                                  |
+| cluster_name              | 如果表是一个簇表，则为簇的名称；否则为空。                                                                                                                                                                                                                                             |
+| iot_name                  | 如果表是索引组织表（IOT），则为索引组织表的名称；否则为空。                                                                                                                                                                                                                             |
+| status                    | 表的状态：VALID（有效）、INVALID（无效）、或 N/A（不适用）。                                                                                                                                                                                                                             |
+| pct_free                  | 表中数据块中的空闲空间百分比。                                                                                                                                                                                                                                                       |
+| pct_used                  | 表中数据块中的使用空间百分比。                                                                                                                                                                                                                                                       |
+| ini_trans                 | 表的初始事务数。                                                                                                                                                                                                                                                                       |
+| max_trans                 | 表的最大事务数。                                                                                                                                                                                                                                                                       |
+| initial_extent            | 表的初始扩展大小（以字节为单位）。                                                                                                                                                                                                                                                     |
+| next_extent               | 表的下一个扩展大小（以字节为单位）。                                                                                                                                                                                                                                                   |
+| min_extents               | 表的最小扩展数。                                                                                                                                                                                                                                                                       |
+| max_extents               | 表的最大扩展数。                                                                                                                                                                                                                                                                       |
+| pct_increase              | 表的百分比增长。                                                                                                                                                                                                                                                                       |
+| freelists                 | 表的自由列表数。                                                                                                                                                                                                                                                                       |
+| freelist_groups           | 表的自由列表组数。                                                                                                                                                                                                                                                                     |
+| logging                   | 表是否启用日志记录。                                                                                                                                                                                                                                                                   |
+| backed_up                 | 表是否已备份。                                                                                                                                                                                                                                                                         |
+| num_rows                  | 表中的行数。                                                                                                                                                                                                                                                                           |
+| blocks                    | 表所占用的块数。                                                                                                                                                                                                                                                                       |
+| empty_blocks              | 表中的空块数。                                                                                                                                                                                                                                                                         |
+| avg_space                 | 表中块的平均使用空间。                                                                                                                                                                                                                                                                 |
+| chain_cnt                 | 表中行的平均链接数。                                                                                                                                                                                                                                                                   |
+| avg_row_len               | 表中行的平均长度（以字节为单位）。                                                                                                                                                                                                                                                     |
+| avg_space_freelist_blocks | 自由列表块中的平均空间。                                                                                                                                                                                                                                                               |
+| num_freelist_blocks       | 自由列表块数。                                                                                                                                                                                                                                                                         |
+| degree                    | 表的并行度。                                                                                                                                                                                                                                                                           |
+| instances                 | 表的实例数。                                                                                                                                                                                                                                                                           |
+| cache                     | 表是否缓存。                                                                                                                                                                                                                                                                           |
+| table_lock                | 表是否锁定。                                                                                                                                                                                                                                                                           |
+| sample_size               | 表用于统计信息的样本大小。                                                                                                                                                                                                                                                             |
+| last_analyzed             | 表的最后一次分析时间。                                                                                                                                                                                                                                                                 |
+| partitioned               | 表是否分区。                                                                                                                                                                                                                                                                           |
+| iot_type                  | 索引组织表的类型。                                                                                                                                                                                                                                                                     |
+| temporary                 | 表是否为临时表。                                                                                                                                                                                                                                                                       |
+| secondary                 | 表是否为次要表。                                                                                                                                                                                                                                                                       |
+| nested                    | 表是否为嵌套表。                                                                                                                                                                                                                                                                       |
+| buffer_pool               | 表的缓冲池类型。                                                                                                                                                                                                                                                                       |
+| flash_cache               | 表的 Flash Cache 类型。                                                                                                                                                                                                                                                                 |
+| cell_flash_cache          | 表的 Cell Flash Cache 类型。                                                                                                                                                                                                                                                             |
+| row_movement              | 表的行移动性。                                                                                                                                                                                                                                                                         |
+| global_stats              | 表是否拥有全局统计信息。                                                                                                                                                                                                                                                               |
+| user_stats                | 表是否拥有用户统计信息。                                                                                                                                                                                                                                                               |
+| duration                  | 统计信息持续时间。                                                                                                                                                                                                                                                                     |
+| skip_corrupt              | 是否跳过损坏的块。                                                                                                                                                                                                                                                                     |
+| monitoring                | 是否监控此表。                                                                                                                                                                                                                                                                         |
+| cluster_owner             | 表所在集群的所有者。                                                                                                                                                                                                                                                                   |
+| dependencies              | 表的依赖项。                                                                                                                                                                                                                                                                           |
+
+#### 1.1.6.2 all_catalog                          
+#### 1.1.6.3 all_col_comments                     
+#### 1.1.6.4 all_cons_columns                     
+#### 1.1.6.5 all_constraints                      
+#### 1.1.6.6 all_dependencies                     
+#### 1.1.6.7 all_ind_columns                      
+#### 1.1.6.8 all_ind_expressions                  
+#### 1.1.6.9 all_ind_partitions                   
+#### 1.1.6.10 all_ind_statistics                   
+#### 1.1.6.11 all_index_usage                      
+#### 1.1.6.12 all_indexes                          
+#### 1.1.6.13 all_jobs                             
+#### 1.1.6.14 all_mview_comments                   
+#### 1.1.6.15 all_mview_logs                       
+#### 1.1.6.16 all_mviews                           
+#### 1.1.6.17 all_objects                          
+all_part_indexes                     
+all_part_key_columns                 
+all_part_tables                      
+all_procedures                       
+all_sequences                        
+all_source                           
+all_subpart_key_columns              
+all_synonyms                         
+all_tab_col_statistics               
+all_tab_cols                         
+all_tab_columns                      
+all_tab_comments                     
+all_tab_modifications                
+all_tab_partitions                   
+all_tab_statistics                   
+all_tab_subpartitions                
+all_tables                           
+all_trigger_cols                     
+all_triggers                         
+all_types                            
+all_users                            
+all_views                            
+col                                  
+cols                                 
+dba_all_tables                       
+dba_catalog                          
+dba_col_comments                     
+dba_cons_columns                     
+dba_constraints                      
+dba_data_files                       
+dba_dependencies                     
+dba_ind_columns                      
+dba_ind_expressions                  
+dba_ind_partitions                   
+dba_ind_statistics                   
+dba_index_usage                      
+dba_indexes                          
+dba_jobs                             
+dba_jobs_running                     
+dba_mview_comments                   
+dba_mview_logs                       
+dba_mviews                           
+dba_objects                          
+dba_objects_list_without_pkg         
+dba_part_indexes                     
+dba_part_key_columns                 
+dba_part_tables                      
+dba_procedures                       
+dba_role_privs                       
+dba_roles                            
+dba_segments                         
+dba_sequences                        
+dba_source                           
+dba_source_all                       
+dba_subpart_key_columns              
+dba_synonyms                         
+dba_tab_col_statistics               
+dba_tab_cols                         
+dba_tab_columns                      
+dba_tab_comments                     
+dba_tab_modifications                
+dba_tab_partitions                   
+dba_tab_statistics                   
+dba_tab_subpartitions                
+dba_tables                           
+dba_tablespaces                      
+dba_trigger_cols                     
+dba_triggers                         
+dba_types                            
+dba_users                            
+dba_views                            
+dict                                 
+dictionary                           
+dual                                 
+gv$nls_parameters                    
+ind                                  
+nls_database_parameters              
+nls_instance_parameters              
+nls_session_parameters               
+obj                                  
+plan_table                           
+product_component_version            
+tab                                  
+tabs                                 
+user_all_tables                      
+user_catalog                         
+user_col_comments                    
+user_cons_columns                    
+user_constraints                     
+user_dependencies                    
+user_ind_columns                     
+user_ind_expressions                 
+user_ind_partitions                  
+user_ind_statistics                  
+user_index_usage                     
+user_indexes                         
+user_jobs                            
+user_mview_comments                  
+user_mview_logs                      
+user_mviews                          
+user_objects                         
+user_part_indexes                    
+user_part_key_columns                
+user_part_tables                     
+user_procedures                      
+user_role_privs                      
+user_segments                        
+user_sequences                       
+user_source                          
+user_subpart_key_columns             
+user_synonyms                        
+user_tab_col_statistics              
+user_tab_cols                        
+user_tab_columns                     
+user_tab_comments                    
+user_tab_modifications               
+user_tab_partitions                  
+user_tab_statistics                  
+user_tab_subpartitions               
+user_tables                          
+user_tablespaces                     
+user_trigger_cols                    
+user_triggers                        
+user_types                           
+user_users                           
+user_views                           
+v$nls_parameters  
 
 ### 1.1.7 字符集和字符序
 
